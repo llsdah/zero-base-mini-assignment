@@ -1,13 +1,17 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicUpdate;
 
+/**
+ * 링크 모델
+ */
 @Entity
 @DynamicUpdate
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE) // 링크에 대한 설정이 동시에 바뀔 가능성은 크다
 public class LinkModel extends DateModel{
 
     @Id
@@ -20,6 +24,8 @@ public class LinkModel extends DateModel{
     private boolean useFlag;
     private Long memberId;
 
+    @Version
+    private Long version; // 다중 서버에서의 동시성문제를 위한 버전 필드 추가
 
     public LinkModel(String url, String title, String contents, boolean useFlag, Long memberId) {
         this.url = url;
@@ -57,8 +63,12 @@ public class LinkModel extends DateModel{
         return content;
     }
 
-    public void setUseFlag(boolean useFlag) {
+    public void updateUseFlag(boolean useFlag) {
         this.useFlag = useFlag;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 
     @Override
@@ -70,6 +80,7 @@ public class LinkModel extends DateModel{
                 ", content='" + content + '\'' +
                 ", useFlag=" + useFlag +
                 ", memberId=" + memberId +
+                ", version=" + version +
                 "} " + super.toString();
     }
 }

@@ -1,5 +1,9 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
+
+/**
+ * 결과 메세지 모델
+ */
 public class ResultMessageModel {
 
     private String messageCode;

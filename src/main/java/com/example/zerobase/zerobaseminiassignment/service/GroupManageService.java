@@ -1,5 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
+import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
 import com.example.zerobase.zerobaseminiassignment.model.DateModel;
 import com.example.zerobase.zerobaseminiassignment.model.LinkModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
@@ -52,18 +53,19 @@ public class GroupManageService {
 
         DateModel dateModel = getData();
         memberModel.setRegistrationDate(dateModel.getRegistrationDate());
-        memberModel.setModificationDate(dateModel.getModificationDate());
+        memberModel.updateModificationDate(dateModel.getModificationDate());
+        memberModel.updateAuthority(MemberUtil.PROSPECTIVE_PARTICIPANT);
 
-        MemberModel saveMemberModel = memberRepository.save(memberModel);
+        MemberModel savedMemberModel = memberRepository.save(memberModel);
 
-        LinkModel createLink = linkRepository.save(new LinkModel(url, title, contents, false , saveMemberModel.getMemberId()));
+        LinkModel createdLink = linkRepository.save(new LinkModel(url, title, contents, false , savedMemberModel.getMemberId()));
 
-        createLink.setRegistrationDate(dateModel.getRegistrationDate());
-        createLink.setModificationDate(dateModel.getModificationDate());
+        createdLink.setRegistrationDate(dateModel.getRegistrationDate());
+        createdLink.updateModificationDate(dateModel.getModificationDate());
 
-        logger.debug("link [{}]",createLink.toString());
+        logger.info("link [{}]",createdLink.toString());
         logger.info("[START] GroupManageService createInviteLink");
-        return createLink;
+        return createdLink;
     }
 
     /**
@@ -75,7 +77,7 @@ public class GroupManageService {
     @Transactional
     public MemberModel accept(LinkModel link) {
         logger.info("[START] GroupManageService acceptMember");
-        logger.debug("link [{}]", link.toString());
+        logger.info("link [{}]", link.toString());
 
         //Hospital hospital = hospitalRepository.findById(id)
           //      .orElseThrow(()
@@ -87,17 +89,17 @@ public class GroupManageService {
             LinkModel modifiedLink = linkRepository.findById(link.getLinkId())
                     .orElseThrow(() -> new RuntimeException("링크 데이터를 찾을 수 없습니다. 링크 ID : "+link.getLinkId()));
             if (modifiedLink != null && !modifiedLink.isUseFlag()) {
-                logger.debug("modify link flag");
-                modifiedLink.setUseFlag(true);
+                logger.info("modify link flag");
+                memberModel.updateAuthority(MemberUtil.PARTICIPANT);
+                modifiedLink.updateUseFlag(true);
 
-                logger.debug("link [{}]", modifiedLink.toString());
+                logger.info("link [{}]", modifiedLink.toString());
             }
-
+            logger.info("member [{}]", memberModel.toString());
         }else{
-            logger.debug("member [{ null }]");
+            logger.info("member [{ null }]");
         }
 
-        logger.debug("member [{}]", memberModel.toString());
         logger.info("[END] GroupManageService acceptMember");
         return memberModel;
     }
