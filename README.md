@@ -23,3 +23,37 @@
 2. 다수 서버일 경우 db 동시 수정이 발생 가능해 @Transaction 추가 
 3. LinkModel의 경우 데이터 수정에 대한 @Version 사용으로 추가 확인
 4. db 값을 통한 비교 수행으로 하루 이전 생성에 대한 부분 초대 수락 불가 
+
+* 테스트 수행 방법 ( 포스트맨 활용 )
+
+1. 샘플 멤버 추가 기능 (매니저 권한)
+- POST : http://localhost:8080/member/create
+- Body
+  {
+  "name": "manager",
+  "phoneNumber": "010-1111-1234",
+  "email": "manager@manager.com",
+  "authority": "매니저"
+  }
+
+2. 그룹 초대 기능
+- POST : http://localhost:8080/group/invite
+- Body
+  {
+  "name": "test",
+  "phoneNumber": "010-1111-1234",
+  "email": "test@test.com",
+  "authority": "초대예정자"
+  }
+
+3. 초대 수락 기능 
+- POST : http://localhost:8080/group/accept
+- Body
+{
+  "linkId":"1",
+  "url":"https://testUrl.com",
+  "title":"Join us our group",
+  "content":"will you join us?",
+  "useFlag":"false",
+  "memberId":"1"
+}
