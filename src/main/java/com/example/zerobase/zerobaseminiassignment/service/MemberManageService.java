@@ -2,9 +2,6 @@ package com.example.zerobase.zerobaseminiassignment.service;
 
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.repository.MemberRepository;
-import jakarta.persistence.Cacheable;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

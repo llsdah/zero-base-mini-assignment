@@ -1,10 +1,8 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
 import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
-import com.example.zerobase.zerobaseminiassignment.model.LinkModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
-import com.example.zerobase.zerobaseminiassignment.service.GroupManageService;
 import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

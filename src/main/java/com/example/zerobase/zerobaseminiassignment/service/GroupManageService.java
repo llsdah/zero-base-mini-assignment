@@ -1,7 +1,7 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
 import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
-import com.example.zerobase.zerobaseminiassignment.model.DateModel;
+import com.example.zerobase.zerobaseminiassignment.model.ModificationDateModel;
 import com.example.zerobase.zerobaseminiassignment.model.LinkModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.repository.LinkRepository;
@@ -51,17 +51,17 @@ public class GroupManageService {
     public LinkModel invite(MemberModel memberModel) {
         logger.info("[START] GroupManageService createInviteLink");
 
-        DateModel dateModel = getData();
-        memberModel.setRegistrationDate(dateModel.getRegistrationDate());
-        memberModel.updateModificationDate(dateModel.getModificationDate());
+        ModificationDateModel modificationDateModel = getData();
+        memberModel.setRegistrationDate(modificationDateModel.getRegistrationDate());
+        memberModel.updateModificationDate(modificationDateModel.getModificationDate());
         memberModel.updateAuthority(MemberUtil.PROSPECTIVE_PARTICIPANT);
 
         MemberModel savedMemberModel = memberRepository.save(memberModel);
 
         LinkModel createdLink = linkRepository.save(new LinkModel(url, title, contents, false , savedMemberModel.getMemberId()));
 
-        createdLink.setRegistrationDate(dateModel.getRegistrationDate());
-        createdLink.updateModificationDate(dateModel.getModificationDate());
+        createdLink.setRegistrationDate(modificationDateModel.getRegistrationDate());
+        createdLink.updateModificationDate(modificationDateModel.getModificationDate());
 
         logger.info("link [{}]",createdLink.toString());
         logger.info("[START] GroupManageService createInviteLink");
@@ -108,7 +108,7 @@ public class GroupManageService {
      * 시간 등록을 위한 메소드
      * @return DateModel
      */
-    public DateModel getData(){
+    public ModificationDateModel getData(){
         // 한국 시간대로 설정
         ZoneId koreaZone = ZoneId.of("Asia/Seoul");
         ZonedDateTime koreaTime = ZonedDateTime.now(koreaZone);
@@ -117,6 +117,6 @@ public class GroupManageService {
 
         String formattedTime = currentTime.format(formatter);
 
-        return new DateModel();
+        return new ModificationDateModel();
     }
 }

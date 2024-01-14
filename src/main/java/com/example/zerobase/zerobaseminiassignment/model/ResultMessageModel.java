@@ -11,6 +11,7 @@ public class ResultMessageModel {
 
     public ResultMessageModel(String messageCode, String messageContent) {
         this.messageCode = messageCode;
+
         this.messageContent = messageContent;
     }
 
