@@ -1,8 +1,10 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
 import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
+import com.example.zerobase.zerobaseminiassignment.model.BlockModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
+import com.example.zerobase.zerobaseminiassignment.service.BlockManageService;
 import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -28,35 +30,64 @@ public class MemberManageController {
     @Autowired
     private MemberManageService memberManageService;
 
+    @Autowired
+    private BlockManageService blockManageService;
+
+
     @PostMapping("/create")
     @ResponseBody
-    public ResultMessageModel postCreate(@RequestBody MemberModel memberModel, HttpServletRequest request){
+    public ResultMessageModel postCreate(@RequestBody MemberModel memberModel, HttpServletRequest request) {
         logger.info("[START] GroupManageController postInvite");
 
         HttpSession session = request.getSession();
 
-        if(memberModel.getAuthority().equals(MemberUtil.MANAGER)){
+        if (memberModel.getAuthority().equals(MemberUtil.MANAGER)) {
             session.setMaxInactiveInterval(10);
-            session.setAttribute(MemberUtil.MANAGER,true);
-            logger.info("session create [{}]",session.getAttribute(MemberUtil.MANAGER));
+            session.setAttribute(MemberUtil.MANAGER, true);
+            logger.info("session create [{}]", session.getAttribute(MemberUtil.MANAGER));
         }
 
         MemberModel outputMember = memberManageService.create(memberModel);
 
-        if(outputMember == null){
+        if (outputMember == null) {
+            return new ResultMessageModel(
+                    "E0001",
+                    "[NULL]:MemberModel",
+                    outputMember
+            );
+        }
+
+        logger.info("outputMember : [{}]", outputMember.toString());
+        logger.info("[END] GroupManageController postInvite");
+        return new ResultMessageModel(
+                "S0001",
+                "[SUCCESS]:postCreate|" + (
+                        session.getAttribute(MemberUtil.MANAGER) != null
+                ),
+                outputMember
+        );
+    }
+
+    @PostMapping("/find")
+    @ResponseBody
+    public ResultMessageModel postFind(@RequestBody Long id) {
+        logger.info("[START] GroupManageController postFind");
+
+        MemberModel outputMember = memberManageService.find(id);
+
+        if (outputMember == null) {
             return new ResultMessageModel(
                     "E0001",
                     "[NULL]:MemberModel"
             );
         }
 
-        logger.info("outputMember : [{}]",outputMember.toString());
-        logger.info("[END] GroupManageController postInvite");
+        logger.info("outputMember : [{}]", outputMember.toString());
+        logger.info("[END] GroupManageController postFind");
         return new ResultMessageModel(
                 "S0001",
-                "[SUCCESS]:postCreate|"+(
-                        session.getAttribute(MemberUtil.MANAGER) != null
-                )
+                "[SUCCESS]:postCreate|" + outputMember.toString()
         );
     }
+
 }

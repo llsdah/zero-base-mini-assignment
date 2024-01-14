@@ -42,7 +42,8 @@ public class GroupManageController {
         if(session.getAttribute(MemberUtil.MANAGER) == null || !(boolean)session.getAttribute(MemberUtil.MANAGER) ){
             return new ResultMessageModel(
                     "E0003",
-                    "[AUTH]:Need Authority"
+                    "[AUTH]:Need Authority",
+                    memberModel
             );
         }
 
@@ -50,7 +51,9 @@ public class GroupManageController {
         if(memberModel == null) {
             return new ResultMessageModel(
                     "E0001",
-                    "[NULL]:MemberModel"
+                    "[NULL]:MemberModel",
+                    memberModel
+
             );
         }else if (!StringUtils.hasText(memberModel.getName())
                     || !StringUtils.hasText(memberModel.getPhoneNumber())
@@ -58,7 +61,9 @@ public class GroupManageController {
         ){
                 return new ResultMessageModel(
                         "E0002",
-                        "[NULL]:MemberModel essential parameter"
+                        "[NULL]:MemberModel essential parameter",
+                        memberModel
+
                 );
         }
 
@@ -67,7 +72,8 @@ public class GroupManageController {
         if(outputLink == null){
             return new ResultMessageModel(
                     "E0001",
-                    "[NULL]:LinkModel"
+                    "[NULL]:LinkModel",
+                    memberModel
             );
         }
 
@@ -75,7 +81,8 @@ public class GroupManageController {
         logger.info("[END] GroupManageController postInvite");
         return new ResultMessageModel(
                 "S0001",
-                "[SUCCESS]:postInvite"
+                "[SUCCESS]:postInvite",
+                memberModel
         );
     }
 
@@ -97,14 +104,16 @@ public class GroupManageController {
         if(outputMemberModel==null){
             return new ResultMessageModel(
                     "E0001",
-                    "[NULL]:MemberModel"
+                    "[NULL]:MemberModel",
+                    outputMemberModel
             );
         }
 
         logger.info("[END] GroupManageController postAccept");
         return new ResultMessageModel(
                 "S0001",
-                "[SUCCESS]:postAccept"
+                "[SUCCESS]:postAccept",
+                outputMemberModel
         );
     }
 
