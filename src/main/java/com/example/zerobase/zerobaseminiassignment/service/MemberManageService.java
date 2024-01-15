@@ -5,6 +5,8 @@ import com.example.zerobase.zerobaseminiassignment.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MemberManageService {
 
@@ -16,8 +18,20 @@ public class MemberManageService {
      * @param memberModel
      * @return MemberModel
      */
-    public MemberModel create(MemberModel memberModel) {
+    public MemberModel save(MemberModel memberModel) {
 
         return memberRepository.save(memberModel);
     }
+
+    public MemberModel find(Long id){
+
+        boolean flag = memberRepository.findById(id).isPresent();
+        if(!flag) return null;
+        return memberRepository.findById(id).get();
+    }
+
+    public List<MemberModel> findAll(){
+        return memberRepository.findAll();
+    }
+
 }

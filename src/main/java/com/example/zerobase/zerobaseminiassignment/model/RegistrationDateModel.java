@@ -11,4 +11,11 @@ public class RegistrationDateModel {
     public void setRegistrationDate(String registrationDate) {
         this.registrationDate = registrationDate;
     }
+
+    @Override
+    public String toString() {
+        return "RegistrationDateModel{" +
+                "registrationDate='" + registrationDate + '\'' +
+                '}';
+    }
 }

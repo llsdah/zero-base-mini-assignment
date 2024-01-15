@@ -1,11 +1,8 @@
 package com.example.zerobase.zerobaseminiassignment;
 
-import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
+import com.example.zerobase.zerobaseminiassignment.common.MyMemberUtil;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -35,7 +31,7 @@ public class GroupManageControllerTest {
     void beforeEach() throws Exception {
         Long number =0L;
 
-        MemberModel managerMember = new MemberModel("Manager","010-1234-5678","manager@manager.com","매니저", number);
+        MemberModel managerMember = new MemberModel("Manager","010-1234-5678","manager@manager.com","매니저", number,1);
         ObjectMapper objectMapper = new ObjectMapper();
 
         String returnBody = "{\"messageCode\":\"S0001\",\"messageContent\":\"[SUCCESS]:postCreate|true\"}";
@@ -50,7 +46,7 @@ public class GroupManageControllerTest {
 
         // 요청 결과에 따라 추가 로직 수행
         if (result.contains(returnBody)) {
-            mockHttpSession.setAttribute(MemberUtil.MANAGER,true);
+            mockHttpSession.setAttribute(MyMemberUtil.MANAGER,true);
         }
     }
 
@@ -59,7 +55,7 @@ public class GroupManageControllerTest {
     void postInviteTest() throws Exception {
 
         Long number = 0L;
-        MemberModel etcMember = new MemberModel("Test","010-1234-5678","test@test.com","", number);
+        MemberModel etcMember = new MemberModel("Test","010-1234-5678","test@test.com","", number,0);
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 그룹 초대 링크 생성
@@ -78,7 +74,7 @@ public class GroupManageControllerTest {
     void postAcceptTest() throws Exception {
 
         Long number = 1L;
-        MemberModel memberModel = new MemberModel("test","test010","test@","관리자", number);
+        MemberModel memberModel = new MemberModel("test","test010","test@","관리자", number,1);
         String linkModel =         "{\"linkId\":\"1\",\"memberId\":\"1\"}";
 
         ObjectMapper objectMapper = new ObjectMapper();

@@ -1,12 +1,8 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
-import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
-import com.example.zerobase.zerobaseminiassignment.model.BlockModel;
-import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
+import com.example.zerobase.zerobaseminiassignment.common.MySessionUtil;
 import com.example.zerobase.zerobaseminiassignment.model.PostModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
-import com.example.zerobase.zerobaseminiassignment.service.BlockManageService;
-import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
 import com.example.zerobase.zerobaseminiassignment.service.PostManageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -35,8 +31,16 @@ public class PostManageController {
     public ResultMessageModel postCreate(@RequestBody PostModel postModel, HttpServletRequest request){
         logger.info("[START] PostManageController postCreate");
 
-        //HttpSession session = request.getSession();
-        PostModel outputPost = postManageService.create(postModel);
+        Long nowMemberId = MySessionUtil.getSessionMemberId(request);
+
+        if(nowMemberId == null){
+            return new ResultMessageModel(
+                    "E0001",
+                    "[NULL]:nowMemberId"
+            );
+        }
+
+        PostModel outputPost = postManageService.save(postModel,nowMemberId);
 
         if(outputPost == null){
             return new ResultMessageModel(
@@ -57,7 +61,7 @@ public class PostManageController {
     }
 
     /**
-     * 게시글 조회하기 단, 차단된 계시글을 제회하고
+     * 게시글 조회하기
      * @param postId
      * @return
      */
@@ -85,13 +89,17 @@ public class PostManageController {
         );
     }
 
+    /**
+     * 게시글 전체 조회, 단 차단한 맴버 혹은 게시글 제외하고
+     * @param request
+     * @return
+     */
     @PostMapping("/finds")
     @ResponseBody
     public ResultMessageModel postFindAll(HttpServletRequest request){
         logger.info("[START] PostManageController postFind");
 
-        HttpSession session = request.getSession();
-        Long nowMemberId = (Long) session.getAttribute("memberID");
+        Long nowMemberId = MySessionUtil.getSessionMemberId(request);
 
         List<PostModel> outputPost = postManageService.findAll(nowMemberId);
 
@@ -111,6 +119,7 @@ public class PostManageController {
                 outputPost
         );
     }
+
     // 테스트용 코드
     @PostMapping("/find/title")
     @ResponseBody

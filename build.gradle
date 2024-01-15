@@ -24,7 +24,18 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
+    implementation 'com.querydsl:querydsl-jpa:5.0.0'
+    // 레디스
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //implementation 'it.ozimov:embedded-redis:0.7.3'
+
+
+    //sevlet
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()

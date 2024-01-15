@@ -12,12 +12,12 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) // 맴버 변수에 대한 설정이 동시에 바뀔 가능성은 적다
-@Table(indexes = @Index(name = "idx_id", columnList = "memberId_title"))
+@Table(indexes = @Index(name = "member_id", columnList = "memberId"))
 public class MemberModel extends ModificationDateModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "memberId_title", nullable = false)
+    @Column(name = "memberId", nullable = false)
     private Long memberId;
 
     private String name;
@@ -26,6 +26,7 @@ public class MemberModel extends ModificationDateModel {
     private String authority;
     private int status; // 0 : 임시 사용자 , 1 : 활성화 , 2 : 비활성화, 3 : 차단
 
+    public MemberModel() {}
     public MemberModel(String name, String phoneNumber, String email, String authority, Long memberId, int status) {
         this.memberId = memberId;
         this.name = name;
@@ -34,7 +35,6 @@ public class MemberModel extends ModificationDateModel {
         this.authority = authority;
         this.status = status;
     }
-    public MemberModel() {}
 
     public void updateAuthority(String authority) {
         this.authority = authority;

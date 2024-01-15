@@ -1,10 +1,8 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
-import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
-import com.example.zerobase.zerobaseminiassignment.model.BlockModel;
+import com.example.zerobase.zerobaseminiassignment.common.MyMemberUtil;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
-import com.example.zerobase.zerobaseminiassignment.service.BlockManageService;
 import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -30,10 +28,12 @@ public class MemberManageController {
     @Autowired
     private MemberManageService memberManageService;
 
-    @Autowired
-    private BlockManageService blockManageService;
-
-
+    /**
+     * 맴버 추가
+     * @param memberModel
+     * @param request
+     * @return
+     */
     @PostMapping("/create")
     @ResponseBody
     public ResultMessageModel postCreate(@RequestBody MemberModel memberModel, HttpServletRequest request) {
@@ -41,13 +41,13 @@ public class MemberManageController {
 
         HttpSession session = request.getSession();
 
-        if (memberModel.getAuthority().equals(MemberUtil.MANAGER)) {
+        if (memberModel.getAuthority().equals(MyMemberUtil.MANAGER)) {
             session.setMaxInactiveInterval(10);
-            session.setAttribute(MemberUtil.MANAGER, true);
-            logger.info("session create [{}]", session.getAttribute(MemberUtil.MANAGER));
+            session.setAttribute(MyMemberUtil.MANAGER, true);
+            logger.info("session create [{}]", session.getAttribute(MyMemberUtil.MANAGER));
         }
 
-        MemberModel outputMember = memberManageService.create(memberModel);
+        MemberModel outputMember = memberManageService.save(memberModel);
 
         if (outputMember == null) {
             return new ResultMessageModel(
@@ -62,12 +62,17 @@ public class MemberManageController {
         return new ResultMessageModel(
                 "S0001",
                 "[SUCCESS]:postCreate|" + (
-                        session.getAttribute(MemberUtil.MANAGER) != null
+                        session.getAttribute(MyMemberUtil.MANAGER) != null
                 ),
                 outputMember
         );
     }
 
+    /**
+     * 맴버 조회
+     * @param id
+     * @return
+     */
     @PostMapping("/find")
     @ResponseBody
     public ResultMessageModel postFind(@RequestBody Long id) {

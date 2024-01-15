@@ -1,6 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
-import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
+import com.example.zerobase.zerobaseminiassignment.common.MyMemberUtil;
 import com.example.zerobase.zerobaseminiassignment.model.ModificationDateModel;
 import com.example.zerobase.zerobaseminiassignment.model.LinkModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
@@ -54,7 +54,7 @@ public class GroupManageService {
         ModificationDateModel modificationDateModel = getData();
         memberModel.setRegistrationDate(modificationDateModel.getRegistrationDate());
         memberModel.updateModificationDate(modificationDateModel.getModificationDate());
-        memberModel.updateAuthority(MemberUtil.PROSPECTIVE_PARTICIPANT);
+        memberModel.updateAuthority(MyMemberUtil.PROSPECTIVE_PARTICIPANT);
 
         MemberModel savedMemberModel = memberRepository.save(memberModel);
 
@@ -90,7 +90,7 @@ public class GroupManageService {
                     .orElseThrow(() -> new RuntimeException("링크 데이터를 찾을 수 없습니다. 링크 ID : "+link.getLinkId()));
             if (modifiedLink != null && !modifiedLink.isUseFlag()) {
                 logger.info("modify link flag");
-                memberModel.updateAuthority(MemberUtil.PARTICIPANT);
+                memberModel.updateAuthority(MyMemberUtil.PARTICIPANT);
                 modifiedLink.updateUseFlag(true);
 
                 logger.info("link [{}]", modifiedLink.toString());

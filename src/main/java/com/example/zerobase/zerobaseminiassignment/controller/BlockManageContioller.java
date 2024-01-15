@@ -26,6 +26,12 @@ public class BlockManageContioller {
     @Autowired
     private BlockManageService blockManageService;
 
+    /**
+     * 게시글 차단
+     * @param postId
+     * @param request
+     * @return
+     */
     @PostMapping("/post")
     @ResponseBody
     public ResultMessageModel postBlockPost(@RequestBody Long postId, HttpServletRequest request) {
@@ -41,6 +47,12 @@ public class BlockManageContioller {
         );
     }
 
+    /**
+     * 맴버 차단
+     * @param memberId
+     * @param request
+     * @return
+     */
     @PostMapping("/member")
     @ResponseBody
     public ResultMessageModel postBlockUser(@RequestBody Long memberId, HttpServletRequest request) {
@@ -57,6 +69,11 @@ public class BlockManageContioller {
         );
     }
 
+    /**
+     * 해당 맴버의 차단 전체 조회
+     * @param request
+     * @return
+     */
     @PostMapping("/finds")
     @ResponseBody
     public ResultMessageModel postFindAll(HttpServletRequest request) {
@@ -71,7 +88,6 @@ public class BlockManageContioller {
                 "[SUCCESS]:postBlock|" + outputBlock.toString()
         );
     }
-
 
     public boolean checkForSession(){
 

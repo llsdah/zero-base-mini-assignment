@@ -11,4 +11,11 @@ public class ModificationDateModel extends RegistrationDateModel{
     public void updateModificationDate(String modificationDate) {
         this.modificationDate = modificationDate;
     }
+
+    @Override
+    public String toString() {
+        return "ModificationDateModel{" +
+                "modificationDate='" + modificationDate + '\'' +
+                "} " + super.toString();
+    }
 }

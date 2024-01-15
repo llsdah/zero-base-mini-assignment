@@ -1,7 +1,5 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
-import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
-import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -17,6 +15,12 @@ public class LoginManageController {
     private static final Logger logger = LoggerFactory.getLogger(LoginManageController.class);
 
 
+    /**
+     * 간단 로그인 향후 업데이트 필요
+     * @param id
+     * @param request
+     * @return
+     */
     @PostMapping("/login")
     @ResponseBody
     public ResultMessageModel postLogin(@RequestBody Long id, HttpServletRequest request) {

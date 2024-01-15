@@ -1,6 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
-import com.example.zerobase.zerobaseminiassignment.common.MemberUtil;
+import com.example.zerobase.zerobaseminiassignment.common.MyMemberUtil;
 import com.example.zerobase.zerobaseminiassignment.model.LinkModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
@@ -39,7 +39,7 @@ public class GroupManageController {
 
         // 매니저 확인
         HttpSession session = request.getSession();
-        if(session.getAttribute(MemberUtil.MANAGER) == null || !(boolean)session.getAttribute(MemberUtil.MANAGER) ){
+        if(session.getAttribute(MyMemberUtil.MANAGER) == null || !(boolean)session.getAttribute(MyMemberUtil.MANAGER) ){
             return new ResultMessageModel(
                     "E0003",
                     "[AUTH]:Need Authority",
