@@ -21,13 +21,13 @@ public class BlockModel extends RegistrationDateModel{
     private Long blockId;
 
     @ManyToOne
-    @JoinColumn(name = "blocker_member_id")
+    @JoinColumn(name = "blocker_memberId")
     private MemberModel blockerMember;
     @ManyToOne
-    @JoinColumn(name = "block_member_id")
+    @JoinColumn(name = "block_memberId")
     private MemberModel blockMember;
     @ManyToOne
-    @JoinColumn(name = "block_post_id")
+    @JoinColumn(name = "block_postId")
     private PostModel blockPost;
 
 
