@@ -32,10 +32,22 @@ dependencies {
     //implementation 'it.ozimov:embedded-redis:0.7.3'
 
 
-    //sevlet
+    // sevlet
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
-}
 
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // lombook
+    compileOnly 'org.projectlombok:lombok:1.18.22' // 현재(2024년 1월)의 최신 버전으로 업데이트해야 합니다.
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+
+}
 
 tasks.named('test') {
     useJUnitPlatform()

@@ -10,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -56,37 +53,39 @@ public class BlockManageContioller {
     @PostMapping("/member")
     @ResponseBody
     public ResultMessageModel postBlockUser(@RequestBody Long memberId, HttpServletRequest request) {
+        logger.info("[START] GroupManageController postBlock");
 
-        HttpSession session = request.getSession();
+        ResultMessageModel result = blockManageService.saveBlockMember(memberId);
 
-        Long nowMemberId = (Long) session.getAttribute("memberID");
 
-        BlockModel outputBlock = blockManageService.saveBlockMember(nowMemberId,memberId);
+        if(result.getMessageCode().startsWith("S")){
+            result.setMessageContent("[SUCCESS]:getPosts");
+        }else {
+            result.setMessageContent("[FAIL]:getPosts");
+        }
+
         logger.info("[END] GroupManageController postBlock");
-        return new ResultMessageModel(
-                "S0001",
-                "[SUCCESS]:postBlock|" + outputBlock.toString()
-        );
+        return result;
     }
 
     /**
      * 해당 맴버의 차단 전체 조회
-     * @param request
      * @return
      */
-    @PostMapping("/finds")
+    @GetMapping("/finds")
     @ResponseBody
-    public ResultMessageModel postFindAll(HttpServletRequest request) {
+    public ResultMessageModel getBlocks() {
+        logger.info("[START] GroupManageController getBlocks");
+        ResultMessageModel result = blockManageService.findAll();
 
-        HttpSession session = request.getSession();
-        Long nowMemberId = (Long) session.getAttribute("memberID");
+        if(result.getMessageCode().startsWith("S")){
+            result.setMessageContent("[SUCCESS]:getBlocks");
+        }else {
+            result.setMessageContent("[FAIL]:getBlocks");
+        }
 
-        List<BlockModel> outputBlock = blockManageService.findAll(nowMemberId);
-        logger.info("[END] GroupManageController postBlock");
-        return new ResultMessageModel(
-                "S0001",
-                "[SUCCESS]:postBlock|" + outputBlock.toString()
-        );
+        logger.info("[END] GroupManageController getBlocks");
+        return result;
     }
 
     public boolean checkForSession(){

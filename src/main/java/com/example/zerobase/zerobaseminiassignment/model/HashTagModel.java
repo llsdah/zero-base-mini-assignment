@@ -38,7 +38,7 @@ public class HashTagModel extends RegistrationDateModel{
         return tagName;
     }
 
-    public void setCount(int count) {
+    public void updateCount(int count) {
         this.count = count;
     }
     public int getCount() {

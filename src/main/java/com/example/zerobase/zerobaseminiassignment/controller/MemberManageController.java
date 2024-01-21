@@ -1,6 +1,7 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyMemberUtil;
+import com.example.zerobase.zerobaseminiassignment.common.MySessionUtil;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
@@ -39,14 +40,6 @@ public class MemberManageController {
     public ResultMessageModel postCreate(@RequestBody MemberModel memberModel, HttpServletRequest request) {
         logger.info("[START] GroupManageController postInvite");
 
-        HttpSession session = request.getSession();
-
-        if (memberModel.getAuthority().equals(MyMemberUtil.MANAGER)) {
-            session.setMaxInactiveInterval(10);
-            session.setAttribute(MyMemberUtil.MANAGER, true);
-            logger.info("session create [{}]", session.getAttribute(MyMemberUtil.MANAGER));
-        }
-
         MemberModel outputMember = memberManageService.save(memberModel);
 
         if (outputMember == null) {
@@ -62,7 +55,7 @@ public class MemberManageController {
         return new ResultMessageModel(
                 "S0001",
                 "[SUCCESS]:postCreate|" + (
-                        session.getAttribute(MyMemberUtil.MANAGER) != null
+                        MySessionUtil.getSessionMemberId(request)!= null
                 ),
                 outputMember
         );

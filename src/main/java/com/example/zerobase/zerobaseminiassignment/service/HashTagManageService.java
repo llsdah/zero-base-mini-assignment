@@ -6,6 +6,7 @@ import com.example.zerobase.zerobaseminiassignment.repository.HashTagRepository;
 import com.example.zerobase.zerobaseminiassignment.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,14 @@ public class HashTagManageService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     public HashTagModel save(String hashTag) {
 
         HashTagModel hashTagModel = this.findByTagNameEquals(hashTag);
 
         if(hashTagModel != null){
-            hashTagModel.setCount(hashTagModel.getCount()+1);
-            entityManager.getTransaction().begin();
-            entityManager.getTransaction().commit();
+            hashTagModel.updateCount(hashTagModel.getCount()+1);
+            hashTagModel = hashTagRepository.save(hashTagModel);
         }else{
             hashTagModel = hashTagRepository.save(new HashTagModel(hashTag.toLowerCase()));
         }

@@ -1,64 +1,90 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyDateUtil;
-import com.example.zerobase.zerobaseminiassignment.model.BlockModel;
-import com.example.zerobase.zerobaseminiassignment.model.HashTagModel;
-import com.example.zerobase.zerobaseminiassignment.model.PostHashTagModel;
-import com.example.zerobase.zerobaseminiassignment.model.PostModel;
+import com.example.zerobase.zerobaseminiassignment.common.MyJwtUtil;
+import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
+import com.example.zerobase.zerobaseminiassignment.model.*;
 import com.example.zerobase.zerobaseminiassignment.repository.PostRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 public class PostManageService {
-
     @Autowired
     private PostRepository postRepository;
     @Autowired
     private MemberManageService memberManageService;
-    @Autowired
-    private BlockManageService blockManageService;
+
+    // 순환참조 -> 확인
+    // @Autowired
+    // private BlockManageService blockManageService;
+
     @Autowired
     private HashTagManageService hashTagManageService;
     @Autowired
     private PostHashTagManageService postHashTagManageService;
 
+    /**
+     *
+     * @param postModel
+     * @return
+     */
     // hashTag 동시 저장.
-    public PostModel save(PostModel postModel, Long nowMemberId) {
-        postModel.setMemberId(memberManageService.find(1L));
+    public ResultMessageModel save(PostModel postModel) {
+        log.info("PostManageService save");
+        postModel.setMemberId(MyJwtUtil.getMember());
         postModel.setRegistrationDate(MyDateUtil.getData().getRegistrationDate());
-        postModel.setMemberId(memberManageService.find(nowMemberId));
-        PostModel outputPost = postRepository.save(postModel);
 
-        // [save] hashTag
-        List<String> hashTags = extractHashTags(outputPost.getContents());
+        try {
 
-        for(String hashTag : hashTags){
-            HashTagModel hashTagModel = hashTagManageService.save(hashTag);
-            // [save] post_hashTag
-            postHashTagManageService.save(new PostHashTagModel(outputPost,hashTagModel,hashTag));
+            PostModel outputPost = postRepository.save(postModel);
+
+            // [save] hashTag
+            List<String> hashTags = extractHashTags(outputPost.getContents());
+
+            for(String hashTag : hashTags){
+                HashTagModel hashTagModel = hashTagManageService.save(hashTag);
+                // [save] post_hashTag
+                postHashTagManageService.save(new PostHashTagModel(outputPost,hashTagModel,hashTag));
+            }
+
+        } catch (DataIntegrityViolationException e) {
+            // 데이터베이스 제약 조건 등에 위배되어 저장 실패
+            // 적절한 예외 처리를 수행
+            log.error(e.getMessage());
+            return ResultMessageUtil.fail();
         }
 
-        return outputPost;
+        return ResultMessageUtil.success();
     }
 
     // 기존에 find 로 접속 불가 findAll 통해서만 가능
-    public PostModel find(Long id){
-        boolean flag = postRepository.findById(id).isPresent();
-        if(!flag) return null;
+    public ResultMessageModel find(Long id){
 
-        return postRepository.findById(id).get();
+        Optional<PostModel> getPost = postRepository.findById(id);
+        if(getPost.isPresent()) {
+            return ResultMessageUtil.success(getPost.get());
+        };
+
+        return ResultMessageUtil.fail();
     }
 
-    public List<PostModel> findAll(Long nowMemberId){
-
+    public ResultMessageModel findAll(){
         List<PostModel> allPost = postRepository.findAll();
-        List<BlockModel> allBlock = blockManageService.findAll(nowMemberId);
+
+        // 순환참조 해제를 위한 개별 생성. 확인이 필요하다.
+        BlockManageService blockManageService = new BlockManageService();
+        List<BlockModel> allBlock = (List<BlockModel>) blockManageService.findAll().getData();
+
         //userList.removeIf(user -> "A".equals(user.getName()));
         // 해당 부분 중 특정 값만 삭제 후 반환
         for(BlockModel block : allBlock){
@@ -70,9 +96,10 @@ public class PostManageService {
         }
 
         if(allPost.isEmpty()){
-            return null;
+            return ResultMessageUtil.fail();
         }
-        return allPost;
+
+        return ResultMessageUtil.success(allPost);
     }
 
     public List<PostModel> findByTitle(String title){
@@ -81,7 +108,7 @@ public class PostManageService {
     }
 
     // hashtag 추출
-    private static List<String> extractHashTags(String text) {
+    private List<String> extractHashTags(String text) {
         List<String> hashtags = new ArrayList<>();
         Pattern pattern = Pattern.compile("#\\w+");
         Matcher matcher = pattern.matcher(text);
@@ -92,4 +119,5 @@ public class PostManageService {
 
         return hashtags;
     }
+
 }

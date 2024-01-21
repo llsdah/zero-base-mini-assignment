@@ -55,7 +55,7 @@ public class GroupManageController {
                     memberModel
 
             );
-        }else if (!StringUtils.hasText(memberModel.getName())
+        }else if (!StringUtils.hasText(memberModel.getUsername())
                     || !StringUtils.hasText(memberModel.getPhoneNumber())
                     || !StringUtils.hasText(memberModel.getEmail())
         ){
