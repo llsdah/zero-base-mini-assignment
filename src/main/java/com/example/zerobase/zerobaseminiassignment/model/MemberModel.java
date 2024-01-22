@@ -1,7 +1,10 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
+import com.example.zerobase.zerobaseminiassignment.common.MyMemberUtil;
 import jakarta.persistence.*;
+import lombok.Cleanup;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicUpdate;
@@ -28,31 +31,45 @@ public class MemberModel extends ModificationDateModel{
     @Column(name = "memberId", nullable = false)
     private Long memberId;
 
+    @Setter
     private String username;
+    @Setter
     private String password;
+    @Setter
     private String phoneNumber;
+
     @Column(unique = true, nullable = false)
     private String email;
     private String authority;
-    private int status; // 0 : 임시 사용자 , 1 : 활성화 , 2 : 비활성화, 3 : 차단
+
+    @Column(columnDefinition = "int default 0")
+    private String status; // 0 : 임시 사용자 , 1 : 활성화 , 2 : 비활성화, 3 : 차단
 
     public MemberModel() {
 
     }
-    public MemberModel(String username, String password, String phoneNumber, String email, String authority, Long memberId, int status) {
+    public MemberModel(String username, String password, String phoneNumber, String email, String authority, Long memberId, String status) {
         this.memberId = memberId;
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.authority = authority;
+
+        if(authority.equals("MANAGER")){
+            this.authority = MyMemberUtil.MANAGER;
+        }else if (authority.equals("USER")){
+            this.authority = MyMemberUtil.USER;
+        }else {
+            this.authority = MyMemberUtil.TEMPORARY_USER;
+        }
+
         this.status = status;
     }
 
     public void updateAuthority(String authority) {
         this.authority = authority;
     }
-    public void updateStatus(int status) { this.status = status; }
+    public void updateStatus(String status) { this.status = status; }
 
     @Override
     public String toString() {

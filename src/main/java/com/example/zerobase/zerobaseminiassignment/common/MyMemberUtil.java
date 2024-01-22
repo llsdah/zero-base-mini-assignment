@@ -5,8 +5,8 @@ package com.example.zerobase.zerobaseminiassignment.common;
  */
 public class MyMemberUtil {
 
-    public static final String MANAGER = "매니저";
-    public static final String PARTICIPANT = "참여자";
-    public static final String PROSPECTIVE_PARTICIPANT = "참여예정자";
+    public static final String MANAGER = "Manager";
+    public static final String USER = "User";
+    public static final String TEMPORARY_USER = "TemporaryUser";
 
 }

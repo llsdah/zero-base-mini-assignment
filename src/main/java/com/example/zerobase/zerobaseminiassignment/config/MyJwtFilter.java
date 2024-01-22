@@ -3,6 +3,7 @@ package com.example.zerobase.zerobaseminiassignment.config;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtProvider;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
+import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -53,16 +54,21 @@ public class MyJwtFilter extends OncePerRequestFilter {
 
         log.info("MyJwtFilter SecurityContextHolder.getContext().getAuthentication() : "+SecurityContextHolder.getContext().getAuthentication());
         if (memberID != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            MemberModel memberModel = memberManageService.find(Long.parseLong(memberID));
-            log.info("memberModel get"+memberModel.toString());
+            ResultMessageModel result = memberManageService.find(Long.parseLong(memberID));
+            log.info("result get "+result.getData().toString());
             // 토큰이 유효하면, 사용자 인증을 수행하고 SecurityContext에 추가
-            if (jwtProvider.validateToken(jwt, memberModel)) {
+            MemberModel memberModel = null;
+            if(result.getData() instanceof MemberModel){
+                memberModel = (MemberModel) result.getData();
+            }else{
+                throw new ServletException("result member data is not MemberModel");
+            }
+
+            if (memberModel != null && jwtProvider.validateToken(jwt, memberModel)) {
                 log.info("MyJwtFilter SecurityContext");
                 Authentication authentication = new UsernamePasswordAuthenticationToken(memberModel, null, memberModel.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-
-            // 토큰이 유효하면, 사용자 인증을 수행하고 SecurityContext에 추가
 
         }
         log.info("MyJwtFilter doFilter");

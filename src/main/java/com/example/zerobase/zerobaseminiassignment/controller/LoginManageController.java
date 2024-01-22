@@ -20,29 +20,27 @@ public class LoginManageController {
 
     @Autowired
     private MemberManageService memberManageService;
-    @Autowired
-    private MyJwtProvider myJwtProvider;
 
     /**
      * 간단 로그인 향후 업데이트 필요
      * @param memberModel
-     * @param request
      * @return
      */
     @PostMapping("/login")
     @ResponseBody
-    public ResultMessageModel postLogin(@RequestBody MemberModel memberModel, HttpServletRequest request) {
+    public ResultMessageModel postLogin(@RequestBody MemberModel memberModel) {
         log.info("[START] LoginManageController postLogin");
 
-        MemberModel outMemberModel = memberManageService.getMember(memberModel);
-        String token = myJwtProvider.generateToken(outMemberModel);
+        ResultMessageModel result = memberManageService.checkLoginMember(memberModel);
 
-        log.info("token : "+token);
+        if(result.getMessageCode().startsWith("S")){
+            result.setMessageContent("[SUCCESS]:postLogin");
+        }else {
+            result.setMessageContent("[FAIL]:postLogin");
+        }
+
         log.info("[END] LoginManageController postLogin");
-        return new ResultMessageModel(
-                "S0001",
-                "[SUCCESS]:"+token
-        );
+        return result;
 
     }
 }

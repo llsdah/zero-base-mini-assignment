@@ -46,7 +46,9 @@ public class MySecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityF
         http
                 .authorizeHttpRequests(
                         authorize -> authorize
-                                .requestMatchers("/member/**").permitAll()
+                                .requestMatchers("/members/**").permitAll()
+                                .requestMatchers("/hashTags/**").permitAll()
+                                .requestMatchers("/posts/**").permitAll()
                                 .requestMatchers("/site/**").permitAll()
                                 .anyRequest().authenticated()
                 );

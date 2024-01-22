@@ -54,7 +54,7 @@ public class GroupManageService {
         ModificationDateModel modificationDateModel = getData();
         memberModel.setRegistrationDate(modificationDateModel.getRegistrationDate());
         memberModel.updateModificationDate(modificationDateModel.getModificationDate());
-        memberModel.updateAuthority(MyMemberUtil.PROSPECTIVE_PARTICIPANT);
+        memberModel.updateAuthority(MyMemberUtil.TEMPORARY_USER);
 
         MemberModel savedMemberModel = memberRepository.save(memberModel);
 
@@ -90,7 +90,7 @@ public class GroupManageService {
                     .orElseThrow(() -> new RuntimeException("링크 데이터를 찾을 수 없습니다. 링크 ID : "+link.getLinkId()));
             if (modifiedLink != null && !modifiedLink.isUseFlag()) {
                 logger.info("modify link flag");
-                memberModel.updateAuthority(MyMemberUtil.PARTICIPANT);
+                memberModel.updateAuthority(MyMemberUtil.USER);
                 modifiedLink.updateUseFlag(true);
 
                 logger.info("link [{}]", modifiedLink.toString());

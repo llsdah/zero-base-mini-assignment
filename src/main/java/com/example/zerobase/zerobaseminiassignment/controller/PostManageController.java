@@ -16,14 +16,12 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostManageController {
 
-    //private static final log log = logFactory.getlog(PostManageController.class);
-
     @Autowired
     private PostManageService postManageService;
 
     @PostMapping
     @ResponseBody
-    public ResultMessageModel postCreate(@RequestBody PostModel postModel, HttpServletRequest request){
+    public ResultMessageModel postCreate(@RequestBody PostModel postModel){
         log.info("[START] PostManageController postCreate");
 
         ResultMessageModel result = postManageService.save(postModel);
@@ -67,7 +65,7 @@ public class PostManageController {
     @GetMapping("/all")
     @ResponseBody
     public ResultMessageModel getPosts(){
-        log.info("[START] PostManageController getPostsAll");
+        log.info("[START] PostManageController getPosts");
 
         ResultMessageModel result = postManageService.findAll();
 
@@ -77,7 +75,7 @@ public class PostManageController {
             result.setMessageContent("[FAIL]:getPosts");
         }
 
-        log.info("[END] PostManageController postCreate");
+        log.info("[END] PostManageController getPosts");
         return result;
     }
 

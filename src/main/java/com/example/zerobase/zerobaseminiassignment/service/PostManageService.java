@@ -41,6 +41,9 @@ public class PostManageService {
     // hashTag 동시 저장.
     public ResultMessageModel save(PostModel postModel) {
         log.info("PostManageService save");
+        log.info("jet auth test");
+        MyJwtUtil.checkAuth();
+        log.info("jet auth test");
         postModel.setMemberId(MyJwtUtil.getMember());
         postModel.setRegistrationDate(MyDateUtil.getData().getRegistrationDate());
 
@@ -52,7 +55,9 @@ public class PostManageService {
             List<String> hashTags = extractHashTags(outputPost.getContents());
 
             for(String hashTag : hashTags){
-                HashTagModel hashTagModel = hashTagManageService.save(hashTag);
+                log.info("hashTag [{}]",hashTag);
+                HashTagModel hashTagModel = (HashTagModel) hashTagManageService.save(hashTag).getData();
+                log.info("HashTagModel [{}]",hashTagModel.toString());
                 // [save] post_hashTag
                 postHashTagManageService.save(new PostHashTagModel(outputPost,hashTagModel,hashTag));
             }
