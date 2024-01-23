@@ -49,20 +49,14 @@ public class MyJwtProvider {
 
     // 토큰 만료 여부 확인
     public boolean isTokenExpired(String token) {
-        log.info("isTokenExpired : "+ new Date().toString());
-
         Date date = extractExpiration(token);
         boolean flag = date.before(new Date());
-        log.info("isTokenExpired : "+ flag);
-        log.info("isTokenExpired : "+ date.toString());
         return flag;
     }
 
     // 토큰 유효성 검증
     public boolean validateToken(String token, MemberModel memberModel) {
-        log.info("validateToken");
         final String memberId = extractMemberId(token);
-        log.info("memberId : "+memberId);
         return (memberId.equals(memberModel.getMemberId()+"") && !isTokenExpired(token));
     }
 
@@ -80,16 +74,16 @@ public class MyJwtProvider {
 
     // 토큰 만료 날짜 추출
     public Date extractExpiration(String token) {
-        log.info("extractExpiration");
         return extractClaim(token, Claims::getExpiration);
     }
 
     // 토큰 생성
     private String createToken(Map<String, Object> claims, String subject) {
+
         Date date = new Date();
         long time = System.currentTimeMillis() +  Long.parseLong(expiration);
         date.setTime(time);
-        log.info("expiratiob : "+expiration);
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
