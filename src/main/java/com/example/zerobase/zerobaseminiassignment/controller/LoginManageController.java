@@ -1,6 +1,7 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtProvider;
+import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
@@ -11,11 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
-@RequestMapping("/site")
+@RequestMapping("/api/login")
 public class LoginManageController {
 
     @Autowired
@@ -26,21 +28,18 @@ public class LoginManageController {
      * @param memberModel
      * @return
      */
-    @PostMapping("/login")
+    @PostMapping
     @ResponseBody
     public ResultMessageModel postLogin(@RequestBody MemberModel memberModel) {
         log.info("[START] LoginManageController postLogin");
 
-        ResultMessageModel result = memberManageService.checkLoginMember(memberModel);
+        String result = memberManageService.checkLoginMember(memberModel);
 
-        if(result.getMessageCode().startsWith("S")){
-            result.setMessageContent("[SUCCESS]:postLogin");
-        }else {
-            result.setMessageContent("[FAIL]:postLogin");
+        if(StringUtils.hasText(result)){
+            return ResultMessageUtil.success(result);
         }
 
-        log.info("[END] LoginManageController postLogin");
-        return result;
+        return ResultMessageUtil.fail();
 
     }
 }

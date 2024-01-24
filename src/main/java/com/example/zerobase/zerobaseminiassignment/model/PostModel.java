@@ -1,6 +1,7 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
 import jakarta.persistence.*;
+import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,13 +22,16 @@ public class PostModel extends ModificationDateModel{
     @JoinColumn(name = "memberModel_memberid") // 외래 키 설정
     private MemberModel memberId;
 
+    @Setter
     private String title;
+    @Setter
     private String contents;
-    private int status; // 0:임시, 1:확설화, 2:비활설화, 3:차단
+    @Setter
+    private String status; // 0:임시, 1:확설화, 2:비활설화, 3:차단
 
     public PostModel(){}
 
-    public PostModel(MemberModel memberId, String title, String contents, int status) {
+    public PostModel(MemberModel memberId, String title, String contents, String status) {
         this.memberId = memberId;
         this.title = title;
         this.contents = contents;
@@ -39,7 +43,7 @@ public class PostModel extends ModificationDateModel{
     public MemberModel getMemberId() {return memberId;}
     public String getTitle() {return title;}
     public String getContents() {return contents;}
-    public int getStatus() {return status;}
+    public String getStatus() {return status;}
 
     @Override
     public String toString() {

@@ -30,7 +30,6 @@ public class BlockModel extends RegistrationDateModel{
     @JoinColumn(name = "block_postId")
     private PostModel blockPost;
 
-
     public BlockModel() {}
     public BlockModel(MemberModel blockerMemberId, MemberModel blockMemberId) {
         this.blockerMember = blockerMemberId;
@@ -53,7 +52,6 @@ public class BlockModel extends RegistrationDateModel{
     public MemberModel getBlockMember() {
         return blockMember;
     }
-
 
     public PostModel getBlockPost() {return blockPost;}
 

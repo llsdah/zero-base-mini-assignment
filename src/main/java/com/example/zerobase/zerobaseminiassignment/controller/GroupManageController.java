@@ -1,24 +1,19 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
-import com.example.zerobase.zerobaseminiassignment.common.MyMemberUtil;
+import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
 import com.example.zerobase.zerobaseminiassignment.model.LinkModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.service.GroupManageService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Controller
 @RequestMapping("/group")
 public class GroupManageController {
-
-    private static final Logger logger = LoggerFactory.getLogger(GroupManageController.class);
 
     @Autowired
     private GroupManageService groupManageService;
@@ -34,56 +29,17 @@ public class GroupManageController {
     // 로그인 정보
     @PostMapping("/invite")
     @ResponseBody
-    public ResultMessageModel postInvite(@RequestBody MemberModel memberModel, HttpServletRequest request){
-        logger.info("[START] GroupManageController postInvite");
+    public ResultMessageModel postInvite(@RequestBody MemberModel memberModel){
+        log.info("[START] GroupManageController postInvite");
 
-        // 매니저 확인
-        HttpSession session = request.getSession();
-        if(session.getAttribute(MyMemberUtil.MANAGER) == null || !(boolean)session.getAttribute(MyMemberUtil.MANAGER) ){
-            return new ResultMessageModel(
-                    "E0003",
-                    "[AUTH]:Need Authority",
-                    memberModel
-            );
+        LinkModel result = groupManageService.invite(memberModel);
+        log.info("[END] GroupManageController postInvite");
+        if(result != null){
+            return ResultMessageUtil.success("postInvite", result);
+        }else {
+            return ResultMessageUtil.fail();
         }
 
-        // 필수 값 확인
-        if(memberModel == null) {
-            return new ResultMessageModel(
-                    "E0001",
-                    "[NULL]:MemberModel",
-                    memberModel
-
-            );
-        }else if (!StringUtils.hasText(memberModel.getUsername())
-                    || !StringUtils.hasText(memberModel.getPhoneNumber())
-                    || !StringUtils.hasText(memberModel.getEmail())
-        ){
-                return new ResultMessageModel(
-                        "E0002",
-                        "[NULL]:MemberModel essential parameter",
-                        memberModel
-
-                );
-        }
-
-        LinkModel outputLink = groupManageService.invite(memberModel);
-
-        if(outputLink == null){
-            return new ResultMessageModel(
-                    "E0001",
-                    "[NULL]:LinkModel",
-                    memberModel
-            );
-        }
-
-        logger.info("outputLink : [{}]",outputLink.toString());
-        logger.info("[END] GroupManageController postInvite");
-        return new ResultMessageModel(
-                "S0001",
-                "[SUCCESS]:postInvite",
-                memberModel
-        );
     }
 
     /**
@@ -97,24 +53,16 @@ public class GroupManageController {
     @PostMapping("/accept")
     @ResponseBody
     public ResultMessageModel postAccept(@RequestBody LinkModel link){
-        logger.info("[START] GroupManageController postAccept");
+        log.info("[START] GroupManageController postAccept");
 
-        MemberModel outputMemberModel = groupManageService.accept(link);
+        MemberModel result = groupManageService.accept(link);
 
-        if(outputMemberModel==null){
-            return new ResultMessageModel(
-                    "E0001",
-                    "[NULL]:MemberModel",
-                    outputMemberModel
-            );
+        log.info("[END] GroupManageController postAccept");
+        if(result != null){
+            return ResultMessageUtil.success("postAccept", result);
+        }else {
+            return ResultMessageUtil.fail();
         }
-
-        logger.info("[END] GroupManageController postAccept");
-        return new ResultMessageModel(
-                "S0001",
-                "[SUCCESS]:postAccept",
-                outputMemberModel
-        );
     }
 
 }

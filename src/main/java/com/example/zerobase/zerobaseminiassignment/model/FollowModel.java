@@ -5,6 +5,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicUpdate;
 
+
 @Entity
 @DynamicUpdate
 @Cacheable
@@ -25,4 +26,12 @@ public class FollowModel extends RegistrationDateModel{
     @ManyToOne
     @JoinColumn(name = "following_memberId")
     private MemberModel followingMemberId;
+
+    public FollowModel() {
+    }
+
+    public FollowModel(MemberModel followerMemberId, MemberModel followingMemberId) {
+        this.followerMemberId = followerMemberId;
+        this.followingMemberId = followingMemberId;
+    }
 }

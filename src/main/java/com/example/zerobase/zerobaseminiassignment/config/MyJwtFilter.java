@@ -39,39 +39,25 @@ public class MyJwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        log.info("MyJwtFilter doFilterInternal");
         final String authorizationHeader = request.getHeader("Authorization");
-        log.info("MyJwtFilter authorizationHeader : "+authorizationHeader);
         String memberID = null;
         String jwt = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-        log.info("MyJwtFilter jwt : "+jwt);
             memberID = jwtProvider.extractMemberId(jwt);
-        log.info("MyJwtFilter memberID : "+memberID);
         }
 
-        log.info("MyJwtFilter SecurityContextHolder.getContext().getAuthentication() : "+SecurityContextHolder.getContext().getAuthentication());
         if (memberID != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            ResultMessageModel result = memberManageService.find(Long.parseLong(memberID));
-            log.info("result get "+result.getData().toString());
+            MemberModel memberModel = memberManageService.find(Long.parseLong(memberID));
             // 토큰이 유효하면, 사용자 인증을 수행하고 SecurityContext에 추가
-            MemberModel memberModel = null;
-            if(result.getData() instanceof MemberModel){
-                memberModel = (MemberModel) result.getData();
-            }else{
-                throw new ServletException("result member data is not MemberModel");
-            }
 
             if (memberModel != null && jwtProvider.validateToken(jwt, memberModel)) {
-                log.info("MyJwtFilter SecurityContext");
                 Authentication authentication = new UsernamePasswordAuthenticationToken(memberModel, null, memberModel.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
         }
-        log.info("MyJwtFilter doFilter");
 
         filterChain.doFilter(request, response);
     }

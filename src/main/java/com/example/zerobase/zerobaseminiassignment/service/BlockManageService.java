@@ -1,5 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
+import com.example.zerobase.zerobaseminiassignment.common.MyAuthUtil;
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtUtil;
 import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
 import com.example.zerobase.zerobaseminiassignment.model.BlockModel;
@@ -25,55 +26,75 @@ public class BlockManageService {
     @Autowired
     private PostManageService postManageService;
 
-    public BlockModel saveBlockPost(Long nowMemberId, Long postId) {
+    public BlockModel saveBlockPost(Long postId) {
         MemberModel blocker = MyJwtUtil.getMember();
-        PostModel block = (PostModel) postManageService.find(postId).getData();
+        PostModel block = postManageService.find(postId);
 
         BlockModel blockModel = new BlockModel(blocker,block);
-        return blockRepository.save(blockModel);
+
+        BlockModel result = blockRepository.save(blockModel);
+
+        return result;
     }
 
-    public ResultMessageModel saveBlockMember(Long memberId) {
+    public BlockModel saveBlockMember(Long memberId) {
         MemberModel blocker = MyJwtUtil.getMember();
-        MemberModel block;
-        ResultMessageModel resultMessageModel = memberManageService.find(memberId);
-        BlockModel blockModel = null;
+        MemberModel block = memberManageService.find(memberId);
 
-        if(resultMessageModel.getData() == null){
-            return resultMessageModel;
-        }else {
-           blockModel = new BlockModel(blocker,(MemberModel) resultMessageModel.getData());
-        }
+        BlockModel blockModel =  new BlockModel(blocker, block);
 
         try {
-
             blockRepository.save(blockModel);
-
         } catch (DataIntegrityViolationException e) {
-            // 데이터베이스 제약 조건 등에 위배되어 저장 실패
-            // 적절한 예외 처리를 수행
             log.error(e.getMessage());
-            return ResultMessageUtil.fail();
         }
-        return ResultMessageUtil.success();
+
+        return blockModel;
     }
 
-    public ResultMessageModel findAll() {
-        MemberModel memberModel = MyJwtUtil.getMember();
+    // 관리자일 경우 전체 조회
+    public List<BlockModel> findAll() {
 
         List<BlockModel> listBlockModel = null;
         try {
-            if(memberModel != null){
-                listBlockModel = blockRepository.findBlockModelByBlockerMember(memberModel);
+
+            if(MyJwtUtil.checkAuth(MyAuthUtil.MANAGER)){
+                listBlockModel = blockRepository.findAll();
+            }else{
+                listBlockModel = blockRepository.findBlockModelByBlockerMember(MyJwtUtil.getMember());
             }
+
             if (listBlockModel == null){
                 throw new Exception("listBlockModel is null");
             }
+
         } catch (Exception e ) {
             log.error(e.getMessage());
-            return ResultMessageUtil.fail();
         }
 
-        return ResultMessageUtil.success(listBlockModel);
+        return listBlockModel;
     }
+
+    public boolean delete(Long blockId) {
+        try{
+            blockRepository.deleteById(blockId);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+    public boolean deleteByBlockerMember(MemberModel blockerMember) {
+        try{
+            blockRepository.deleteByBlockerMember(blockerMember);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+
 }

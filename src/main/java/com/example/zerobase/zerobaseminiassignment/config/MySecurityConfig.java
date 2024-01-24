@@ -49,7 +49,7 @@ public class MySecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityF
                                 .requestMatchers("/members/**").permitAll()
                                 .requestMatchers("/hashTags/**").permitAll()
                                 .requestMatchers("/posts/**").permitAll()
-                                .requestMatchers("/site/**").permitAll()
+                                .requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 

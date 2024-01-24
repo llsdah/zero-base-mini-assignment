@@ -1,9 +1,9 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
-import com.example.zerobase.zerobaseminiassignment.model.PostModel;
+import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
+import com.example.zerobase.zerobaseminiassignment.model.HashTagModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.service.HashTagManageService;
-import com.example.zerobase.zerobaseminiassignment.service.PostManageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,16 +29,15 @@ public class HashTagManageController {
     public ResultMessageModel getHashTag(@PathVariable("hashTagName") String hashTagName){
         log.info("[START] HashTagManageController getHashTag");
 
-        ResultMessageModel result = hashTagManageService.find(hashTagName);
-
-        if(result.getMessageCode().startsWith("S")){
-            result.setMessageContent("[SUCCESS]:getHashTag");
-        }else {
-            result.setMessageContent("[FAIL]:getHashTag");
-        }
+        HashTagModel result = hashTagManageService.find(hashTagName);
 
         log.info("[END] HashTagManageController getHashTag");
-        return result;
+
+        if(result != null){
+            return ResultMessageUtil.success("getHashTag", result);
+        }
+        return ResultMessageUtil.fail();
+
     }
 
     /**
@@ -50,16 +49,26 @@ public class HashTagManageController {
     public ResultMessageModel getHashTags(){
         log.info("[START] HashTagManageController getHashTags");
 
-        ResultMessageModel result = hashTagManageService.findAll();
-
-        if(result.getMessageCode().startsWith("S")){
-            result.setMessageContent("[SUCCESS]:getHashTags");
-        }else {
-            result.setMessageContent("[FAIL]:getHashTags");
-        }
+        List<HashTagModel> result = hashTagManageService.findAll();
 
         log.info("[END] HashTagManageController getHashTags");
-        return result;
+        if(result != null){
+            return ResultMessageUtil.success("getHashTags", result);
+        }
+        return ResultMessageUtil.fail();
+    }
+
+    @DeleteMapping("{hashTagId}")
+    @ResponseBody
+    public ResultMessageModel deleteHashTags(@PathVariable Long hashTagId){
+
+        boolean flag = hashTagManageService.delete(hashTagId);
+
+        if(flag){
+            return ResultMessageUtil.success("deleteHashTags");
+        }
+
+        return ResultMessageUtil.fail("deleteHashTags");
     }
 
 }

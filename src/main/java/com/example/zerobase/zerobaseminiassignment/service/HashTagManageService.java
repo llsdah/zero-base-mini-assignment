@@ -26,12 +26,10 @@ public class HashTagManageService {
     private EntityManager entityManager;
 
     @Transactional
-    public ResultMessageModel save(String hashTag) {
+    public HashTagModel save(String hashTag) {
         log.info("HashTagManageService save");
-        HashTagModel hashTagModel = null;
-        if(this.find(hashTag).getData() instanceof HashTagModel){
-            hashTagModel = (HashTagModel) this.find(hashTag).getData();
-        }
+        HashTagModel hashTagModel = this.find(hashTag);
+
 
         if(hashTagModel != null){
             hashTagModel = entityManager.find(HashTagModel.class, hashTagModel.getHashTagId());
@@ -42,32 +40,40 @@ public class HashTagManageService {
             log.info("HashTagManageService count 1 ");
         }
 
-        return ResultMessageUtil.success(hashTagModel);
+        return hashTagModel;
     }
 
     // 소문자로만 조회
-    public ResultMessageModel find(String hashTag) {
+    public HashTagModel find(String hashTag) {
 
-        HashTagModel hashTagModel;
+        HashTagModel hashTagModel = null;
         try {
             hashTagModel =  hashTagRepository.findByTagNameEquals(hashTag.toLowerCase());
         } catch (DataIntegrityViolationException e) {
             // 데이터베이스 제약 조건 등에 위배되어 저장 실패
             // 적절한 예외 처리를 수행
             log.error(e.getMessage());
-            return ResultMessageUtil.fail();
         }
 
-        return ResultMessageUtil.success(hashTagModel);
+        return hashTagModel;
     }
 
-    public ResultMessageModel findAll() {
+    public List<HashTagModel> findAll() {
 
         List<HashTagModel> hashTagModelList = hashTagRepository.findAll();
-        if(hashTagModelList.isEmpty()){
-            return ResultMessageUtil.fail();
+
+        return hashTagModelList;
+    }
+
+    public boolean delete(Long hashTagId) {
+
+        try{
+            hashTagRepository.deleteById(hashTagId);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return false;
         }
 
-        return ResultMessageUtil.success(hashTagModelList);
+        return true;
     }
 }

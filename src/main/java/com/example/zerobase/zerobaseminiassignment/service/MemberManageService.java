@@ -1,9 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
-import com.example.zerobase.zerobaseminiassignment.common.MyDateUtil;
-import com.example.zerobase.zerobaseminiassignment.common.MyJwtProvider;
-import com.example.zerobase.zerobaseminiassignment.common.MyJwtUtil;
-import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
+import com.example.zerobase.zerobaseminiassignment.common.*;
 import com.example.zerobase.zerobaseminiassignment.model.*;
 import com.example.zerobase.zerobaseminiassignment.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
@@ -32,42 +29,49 @@ public class MemberManageService {
      * @param memberModel
      * @return MemberModel
      */
-    public ResultMessageModel save(MemberModel memberModel) {
+    public MemberModel save(MemberModel memberModel) {
         log.info("MemberManageService save");
-        
+        MemberModel model = null;
         try {
-
-            memberRepository.save(memberModel);
+            model = memberRepository.save(memberModel);
 
         } catch (DataIntegrityViolationException e) {
             // 데이터베이스 제약 조건 등에 위배되어 저장 실패
             // 적절한 예외 처리를 수행
             log.error(e.getMessage());
-            return ResultMessageUtil.fail();
         }
 
-        return ResultMessageUtil.success();
+        return model;
     }
 
-    public ResultMessageModel find(){
+    /**
+     * 데이터가 없다면 null이 맞을까?
+     * @return
+     */
+    
+    public MemberModel find(){
         log.info("MemberManageService find ");
+        MemberModel result = null;
         Optional<MemberModel> output = memberRepository.findById(MyJwtUtil.getMemberId());
         if(output.isPresent()) {
-            return ResultMessageUtil.success(output.get());
+            result = output.get();
         };
-        return ResultMessageUtil.fail();
+
+        return result;
     }
 
-    public ResultMessageModel find(Long id){
-        log.info("MemberManageService find "+ id);
+    public MemberModel find(Long id){
+        log.info("MemberManageService find if"+ id);
+        MemberModel result = null;
         Optional<MemberModel> output = memberRepository.findById(id);
         if(output.isPresent()) {
-            return ResultMessageUtil.success(output.get());
+            result = output.get();
         };
-        return ResultMessageUtil.fail();
+
+        return result;
     }
 
-    public ResultMessageModel findAll(){
+    public List<MemberModel> findAll(){
         log.info("MemberManageService findAll");
         List<MemberModel> memberModelList = memberRepository.findAll();
         log.info("MemberManageService : ");
@@ -76,13 +80,17 @@ public class MemberManageService {
             for(MemberModel memberModel: memberModelList){
                 // 잠시 보류
             }
-            return ResultMessageUtil.success(memberModelList);
         }
 
-        return ResultMessageUtil.fail();
+        return memberModelList;
     }
 
-    public ResultMessageModel checkLoginMember(MemberModel memberModel) {
+    /**
+     * 단순멤버 체크용도
+     * @param memberModel
+     * @return
+     */
+    public String checkLoginMember(MemberModel memberModel) {
         log.info("MemberManageService checkLoginMember");
 
         Optional<MemberModel> outputMember = memberRepository.findByEmailAndPassword(
@@ -91,22 +99,19 @@ public class MemberManageService {
 
         if(outputMember.isPresent()){
             token = myJwtProvider.generateToken(outputMember.get());
-            return ResultMessageUtil.success(token);
+            return token;
         }
 
         log.info("token : "+token);
-        return ResultMessageUtil.fail();
+        return token;
     }
 
     @Transactional
-    public ResultMessageModel update(Long memberId, MemberModel memberModel) {
+    public MemberModel update(Long memberId, MemberModel memberModel) {
         log.info("MemberManageService update");
-        MemberModel existingData;
+        MemberModel existingData = null;
         try {
             existingData = entityManager.find(MemberModel.class, memberId);;
-            if(! ( this.find(memberId).getData() instanceof MemberModel) ){
-                return ResultMessageUtil.fail();
-            }
 
             // 기존 데이터데 수정된 데이터가 있으면 붙영 넣고 다시 저장.
             if(memberModel.getAuthority() != null){
@@ -132,32 +137,50 @@ public class MemberManageService {
             // 데이터베이스 제약 조건 등에 위배되어 저장 실패
             // 적절한 예외 처리를 수행
             log.error(e.getMessage());
-            return ResultMessageUtil.fail();
         }
 
-        return ResultMessageUtil.success(existingData);
+        return existingData;
 
     }
 
     /**
      * 맴버 삭제
-     * ✅ 삭제에 대한 권한 체크  ->  본인 스스로인 경우->(탈퇴 요청)
-     * ✅ 타 참조 테이블 확인해 같이 넣어 주기
-     * ✅
+     * ✅ 삭제에 대한 권한 체크  ->  본인 스스로인 경우-> (탈퇴 요청)
+     * ✅ 타 참조 테이블 확인해 같이 넣어 주기 : 신고x, 차단0, 게시글0
      * @param memberId
      * @return
      */
-    public ResultMessageModel delete(Long memberId) {
-        MyJwtUtil.checkAuth();
+    public boolean delete(Long memberId) {
+        if(!MyJwtUtil.checkAuth(MyAuthUtil.MANAGER)){
+            log.error("need Authority");
+            return false;
+        }
+
         try {
+            //별도 구현
+            BlockManageService blockManageService = new BlockManageService();
+            PostManageService postManageService = new PostManageService();
+            ReportManageService reportManageService = new ReportManageService();
+
+            Optional<MemberModel> deleteData = memberRepository.findById(memberId);
+
+            if (deleteData.isPresent()){
+
+                // 신고 와 차단 받은 사람만 남겨 주기 .
+                blockManageService.deleteByBlockerMember(deleteData.get());
+                postManageService.deleteByMemberId(deleteData.get());
+                reportManageService.deleteByTargetMemberId(deleteData.get());
+
                 memberRepository.deleteById(memberId);
+            }
+
         } catch (DataIntegrityViolationException e) {
             // 데이터베이스 제약 조건 등에 위배되어 저장 실패
             // 적절한 예외 처리를 수행
             log.error(e.getMessage());
-            return ResultMessageUtil.fail();
+            return false;
         }
 
-        return ResultMessageUtil.success();
+        return true;
     }
 }

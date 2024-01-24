@@ -1,24 +1,20 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
+import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
 import com.example.zerobase.zerobaseminiassignment.model.BlockModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.service.BlockManageService;
-import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Controller
-@RequestMapping("/block")
+@RequestMapping("/blocks")
 public class BlockManageContioller {
-
-    private static final Logger logger = LoggerFactory.getLogger(MemberManageController.class);
 
     @Autowired
     private BlockManageService blockManageService;
@@ -26,46 +22,42 @@ public class BlockManageContioller {
     /**
      * 게시글 차단
      * @param postId
-     * @param request
      * @return
      */
     @PostMapping("/post")
     @ResponseBody
-    public ResultMessageModel postBlockPost(@RequestBody Long postId, HttpServletRequest request) {
+    public ResultMessageModel postBlockPost(@RequestBody Long postId) {
+        log.info("[StART] BlockManageContioller postBlockPost");
 
-        HttpSession session = request.getSession();
-        Long nowMemberId = (Long) session.getAttribute("memberID");
+        BlockModel result = blockManageService.saveBlockPost(postId);
+        log.info("[END] BlockManageContioller postBlockPost");
+        if(result != null){
+            return ResultMessageUtil.success("postBlockPost",result);
+        }else {
+            return ResultMessageUtil.fail();
+        }
 
-        BlockModel outputBlock = blockManageService.saveBlockPost(nowMemberId,postId);
-        logger.info("[END] GroupManageController postBlock");
-        return new ResultMessageModel(
-                "S0001",
-                "[SUCCESS]:postBlock|" + outputBlock.toString()
-        );
     }
 
     /**
      * 맴버 차단
      * @param memberId
-     * @param request
      * @return
      */
     @PostMapping("/member")
     @ResponseBody
-    public ResultMessageModel postBlockUser(@RequestBody Long memberId, HttpServletRequest request) {
-        logger.info("[START] GroupManageController postBlock");
+    public ResultMessageModel postBlockUser(@RequestBody Long memberId) {
+        log.info("[START] BlockManageContioller postBlockUser");
 
-        ResultMessageModel result = blockManageService.saveBlockMember(memberId);
+        BlockModel result = blockManageService.saveBlockMember(memberId);
 
-
-        if(result.getMessageCode().startsWith("S")){
-            result.setMessageContent("[SUCCESS]:getPosts");
+        log.info("[END] BlockManageContioller postBlockUser");
+        if(result != null){
+            return ResultMessageUtil.success("postBlockUser", result);
         }else {
-            result.setMessageContent("[FAIL]:getPosts");
+            return ResultMessageUtil.fail();
         }
 
-        logger.info("[END] GroupManageController postBlock");
-        return result;
     }
 
     /**
@@ -75,21 +67,28 @@ public class BlockManageContioller {
     @GetMapping("/finds")
     @ResponseBody
     public ResultMessageModel getBlocks() {
-        logger.info("[START] GroupManageController getBlocks");
-        ResultMessageModel result = blockManageService.findAll();
+        log.info("[START] BlockManageContioller getBlocks");
+        List<BlockModel> results = blockManageService.findAll();
 
-        if(result.getMessageCode().startsWith("S")){
-            result.setMessageContent("[SUCCESS]:getBlocks");
+        log.info("[END] BlockManageContioller getBlocks");
+        if(results != null){
+            return ResultMessageUtil.success("getBlocks", results);
         }else {
-            result.setMessageContent("[FAIL]:getBlocks");
+            return ResultMessageUtil.fail();
         }
 
-        logger.info("[END] GroupManageController getBlocks");
-        return result;
     }
 
-    public boolean checkForSession(){
+    @DeleteMapping("/{blockId}")
+    @ResponseBody
+    public ResultMessageModel deleteBlock(@PathVariable("blockId") Long blockId) {
+        log.info("[START] BlockManageContioller deleteBlock");
+        boolean results = blockManageService.delete(blockId);
 
-        return false;
+        log.info("[END] BlockManageContioller deleteBlock");
+        if(results){
+            return ResultMessageUtil.success("deleteBlock", results);
+        }
+        return ResultMessageUtil.fail();
     }
 }

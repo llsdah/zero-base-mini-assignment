@@ -2,6 +2,8 @@ package com.example.zerobase.zerobaseminiassignment.model;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicUpdate;
@@ -23,7 +25,7 @@ public class ReportModel extends ModificationDateModel{
 
     @ManyToOne
     @JoinColumn(name = "reporter_memberId", nullable = false) // 외래 키 설정
-    private MemberModel ReporterMemberId;
+    private MemberModel reporterMemberId;
     @ManyToOne
     @JoinColumn(name = "postId",nullable = true) // 외래 키 설정
     private PostModel postId;
@@ -33,9 +35,18 @@ public class ReportModel extends ModificationDateModel{
 
     private String reason;
 
+    @Getter
+    @Setter
+    private String answer;
+
+    @Getter
+    @Setter
+    @Column(columnDefinition = "int default 0") // 0 미처리 , 0이외값 처리
+    private int status;
+
     public ReportModel() {}
     public ReportModel(MemberModel reporterMemberId, PostModel postId, MemberModel targetMemberId, String reason) {
-        ReporterMemberId = reporterMemberId;
+        this.reporterMemberId = reporterMemberId;
         this.postId = postId;
         this.targetMemberId = targetMemberId;
         this.reason = reason;
@@ -46,7 +57,7 @@ public class ReportModel extends ModificationDateModel{
     }
 
     public MemberModel getReporterMemberId() {
-        return ReporterMemberId;
+        return reporterMemberId;
     }
 
     public PostModel getPostId() {
@@ -62,14 +73,14 @@ public class ReportModel extends ModificationDateModel{
     }
 
     public void setReporterMemberId(MemberModel reporterMemberId) {
-        ReporterMemberId = reporterMemberId;
+        this.reporterMemberId = reporterMemberId;
     }
 
     @Override
     public String toString() {
         return "ReportModel{" +
                 "reportsId=" + reportsId +
-                ", ReporterMemberId=" + ReporterMemberId +
+                ", ReporterMemberId=" + reporterMemberId +
                 ", postId=" + postId +
                 ", targetMemberId=" + targetMemberId +
                 ", reason='" + reason + '\'' +

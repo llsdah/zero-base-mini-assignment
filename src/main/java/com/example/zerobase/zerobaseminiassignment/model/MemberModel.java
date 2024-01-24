@@ -1,8 +1,7 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
-import com.example.zerobase.zerobaseminiassignment.common.MyMemberUtil;
+import com.example.zerobase.zerobaseminiassignment.common.MyAuthUtil;
 import jakarta.persistence.*;
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cache;
@@ -10,7 +9,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -56,11 +54,11 @@ public class MemberModel extends ModificationDateModel{
         this.email = email;
 
         if(authority.equals("MANAGER")){
-            this.authority = MyMemberUtil.MANAGER;
+            this.authority = MyAuthUtil.MANAGER;
         }else if (authority.equals("USER")){
-            this.authority = MyMemberUtil.USER;
+            this.authority = MyAuthUtil.USER;
         }else {
-            this.authority = MyMemberUtil.TEMPORARY_USER;
+            this.authority = MyAuthUtil.TEMPORARY_USER;
         }
 
         this.status = status;

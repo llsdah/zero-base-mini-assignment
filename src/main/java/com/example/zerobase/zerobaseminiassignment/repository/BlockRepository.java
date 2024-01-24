@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface BlockRepository extends JpaRepository<BlockModel,Long> {
     List<BlockModel> findBlockModelByBlockerMember(MemberModel blockerMember);
+
+    void deleteByBlockerMember(MemberModel blockerMember);
 }
