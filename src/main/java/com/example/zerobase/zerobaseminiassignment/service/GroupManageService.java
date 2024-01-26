@@ -1,20 +1,15 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
-import com.example.zerobase.zerobaseminiassignment.common.MyAuthUtil;
-import com.example.zerobase.zerobaseminiassignment.common.MyJwtUtil;
-import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
+import com.example.zerobase.zerobaseminiassignment.common.MyAuthorityUtil;
 import com.example.zerobase.zerobaseminiassignment.model.ModificationDateModel;
 import com.example.zerobase.zerobaseminiassignment.model.LinkModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
-import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.repository.LinkRepository;
 import com.example.zerobase.zerobaseminiassignment.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -62,7 +57,7 @@ public class GroupManageService {
         ModificationDateModel modificationDateModel = getData();
         memberModel.setRegistrationDate(modificationDateModel.getRegistrationDate());
         memberModel.updateModificationDate(modificationDateModel.getModificationDate());
-        memberModel.updateAuthority(MyAuthUtil.TEMPORARY_USER);
+        memberModel.updateAuthority(MyAuthorityUtil.TEMPORARY_USER);
 
         MemberModel savedMemberModel = memberRepository.save(memberModel);
         LinkModel createdLink = linkRepository.save(new LinkModel(url, title, contents, false , savedMemberModel.getMemberId()));
@@ -89,7 +84,7 @@ public class GroupManageService {
             LinkModel modifiedLink = linkRepository.findById(link.getLinkId())
                     .orElseThrow(() -> new RuntimeException("링크 데이터를 찾을 수 없습니다. 링크 ID : "+link.getLinkId()));
             if (modifiedLink != null && !modifiedLink.isUseFlag()) {
-                memberModel.updateAuthority(MyAuthUtil.USER);
+                memberModel.updateAuthority(MyAuthorityUtil.USER);
                 modifiedLink.updateUseFlag(true);
             }
 

@@ -1,11 +1,10 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
-import com.example.zerobase.zerobaseminiassignment.common.MyAuthUtil;
+import com.example.zerobase.zerobaseminiassignment.common.MyAuthorityUtil;
 import com.example.zerobase.zerobaseminiassignment.common.MyDateUtil;
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtUtil;
-import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
 import com.example.zerobase.zerobaseminiassignment.model.*;
-import com.example.zerobase.zerobaseminiassignment.repository.PostRepository;
+import com.example.zerobase.zerobaseminiassignment.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -27,16 +26,13 @@ public class PostManageService {
     @Autowired
     private PostRepository postRepository;
     @Autowired
-    private MemberManageService memberManageService;
-
-    // 순환참조 -> 확인
-    // @Autowired
-    // private BlockManageService blockManageService;
-
+    private MemberRepository memberRepository;
     @Autowired
-    private HashTagManageService hashTagManageService;
+    private BlockRepository blockRepository;
     @Autowired
-    private PostHashTagManageService postHashTagManageService;
+    private HashTagRepository hashTagRepository;
+    @Autowired
+    private PostHashTagRepository postHashTagRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -61,10 +57,10 @@ public class PostManageService {
 
             for(String hashTag : hashTags){
                 log.info("hashTag [{}]",hashTag);
-                HashTagModel hashTagModel = hashTagManageService.save(hashTag);
-                log.info("HashTagModel [{}]",hashTagModel.toString());
+                HashTagModel hashTagModel = hashTagRepository.save(new HashTagModel(hashTag.toLowerCase()));
+
                 // [save] post_hashTag
-                postHashTagManageService.save(new PostHashTagModel(outputPost,hashTagModel,hashTag));
+                postHashTagRepository.save(new PostHashTagModel(outputPost,hashTagModel,hashTag));
             }
 
         } catch (DataIntegrityViolationException e) {
@@ -91,10 +87,9 @@ public class PostManageService {
         List<PostModel> allPost = postRepository.findAll();
 
         // 순환참조 해제를 위한 개별 생성. 확인이 필요하다.
-        BlockManageService blockManageService = new BlockManageService();
-        List<BlockModel> allBlock = blockManageService.findAll();
+        List<BlockModel> allBlock = blockRepository.findAll();
 
-        if(allBlock == null){
+        if(allBlock.isEmpty()){
             throw new RuntimeException("block is null");
         }
 
@@ -137,7 +132,7 @@ public class PostManageService {
         Optional<PostModel> opExistData = postRepository.findById(postId);
         PostModel existingData = null;
         if(opExistData.isPresent() &&
-                (MyJwtUtil.checkAuth(MyAuthUtil.MANAGER)
+                (MyJwtUtil.checkAuth(MyAuthorityUtil.MANAGER)
                         ||
                         opExistData.get().getMemberId().getMemberId().equals(MyJwtUtil.getMemberId()))
         ){
@@ -168,7 +163,7 @@ public class PostManageService {
      * @return
      */
     public boolean delete(Long postId) {
-        if(!MyJwtUtil.checkAuth(MyAuthUtil.MANAGER)){
+        if(!MyJwtUtil.checkAuth(MyAuthorityUtil.MANAGER)){
             log.error("need Authority");
             return false;
         }
@@ -179,7 +174,7 @@ public class PostManageService {
             if(postModel.isPresent() &&
                     postModel.get().getMemberId().getMemberId().equals(MyJwtUtil.getMemberId())
             ){
-                postHashTagManageService.deleteByPostId(postModel.get());
+                postHashTagRepository.deleteByPostId(postModel.get());
                 postRepository.deleteById(postId);
             }
         }catch (Exception e){

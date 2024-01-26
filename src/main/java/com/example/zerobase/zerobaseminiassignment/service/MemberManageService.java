@@ -86,7 +86,7 @@ public class MemberManageService {
     }
 
     /**
-     * 단순멤버 체크용도
+     * 로그인시 멤버 체크후 토큰 발행
      * @param memberModel
      * @return
      */
@@ -151,7 +151,7 @@ public class MemberManageService {
      * @return
      */
     public boolean delete(Long memberId) {
-        if(!MyJwtUtil.checkAuth(MyAuthUtil.MANAGER)){
+        if(!MyJwtUtil.checkAuth(MyAuthorityUtil.MANAGER)){
             log.error("need Authority");
             return false;
         }

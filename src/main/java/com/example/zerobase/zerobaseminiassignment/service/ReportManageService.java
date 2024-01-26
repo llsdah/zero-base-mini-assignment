@@ -1,23 +1,22 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
-import com.example.zerobase.zerobaseminiassignment.common.MyAuthUtil;
+import com.example.zerobase.zerobaseminiassignment.common.MyAuthorityUtil;
 import com.example.zerobase.zerobaseminiassignment.common.MyDateUtil;
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtUtil;
-import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ReportModel;
-import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
+import com.example.zerobase.zerobaseminiassignment.repository.MemberRepository;
 import com.example.zerobase.zerobaseminiassignment.repository.ReportRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,17 +25,16 @@ public class ReportManageService {
     @Autowired
     private ReportRepository reportRepository;
     @Autowired
-    private MemberManageService memberManageService;
+    private MemberRepository memberRepository;
     @PersistenceContext
     private EntityManager entityManager;
 
     public ReportModel save(ReportModel reportModel) {
-        MemberModel memberModel = memberManageService.find(MyJwtUtil.getMemberId());
-        reportModel.setReporterMemberId(memberModel);
+        Optional<MemberModel> memberModel = memberRepository.findById(MyJwtUtil.getMemberId());
+        if(memberModel.isEmpty()) return null;
+        reportModel.setReporterMemberId(memberModel.get());
 
-        ReportModel result = reportRepository.save(reportModel);
-
-        return result;
+        return reportRepository.save(reportModel);
     }
 
     @Transactional
@@ -81,7 +79,7 @@ public class ReportManageService {
         //관리자일 경우 전체 조회가 가능하도록
         List<ReportModel> reportModelList;
 
-        if(MyJwtUtil.checkAuth(MyAuthUtil.MANAGER)){
+        if(MyJwtUtil.checkAuth(MyAuthorityUtil.MANAGER)){
             reportModelList = reportRepository.findAll();
         }else {
             reportModelList = reportRepository.findByReporterMemberId(MyJwtUtil.getMember());
