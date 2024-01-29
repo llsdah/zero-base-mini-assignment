@@ -2,11 +2,14 @@ package com.example.zerobase.zerobaseminiassignment.model;
 
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
 
 /**
  * 신고
@@ -43,6 +46,14 @@ public class ReportModel extends ModificationDateModel{
     @Setter
     @Column(columnDefinition = "int default 0") // 0 미처리 , 0이외값 처리
     private int status;
+
+    @CreationTimestamp
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     public ReportModel() {}
     public ReportModel(MemberModel reporterMemberId, PostModel postId, MemberModel targetMemberId, String reason) {

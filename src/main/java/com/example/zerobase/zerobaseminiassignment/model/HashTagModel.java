@@ -1,9 +1,12 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @DynamicUpdate
@@ -22,6 +25,14 @@ public class HashTagModel extends RegistrationDateModel{
 
     @Column(columnDefinition = "int default 1")
     private int count; // 태그된 횟수
+
+    @CreationTimestamp
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     public HashTagModel() {}
     public HashTagModel(String tagName) {

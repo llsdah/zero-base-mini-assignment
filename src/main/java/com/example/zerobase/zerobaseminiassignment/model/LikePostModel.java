@@ -1,9 +1,12 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @DynamicUpdate
@@ -14,6 +17,7 @@ public class LikePostModel extends RegistrationDateModel{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "likeId", nullable = false)
     private Long LikePostId;
 
     @ManyToOne
@@ -23,6 +27,15 @@ public class LikePostModel extends RegistrationDateModel{
     @ManyToOne
     @JoinColumn(name = "likePost_likingMember") // 외래 키 설정
     private MemberModel likingMember;
+
+
+    @CreationTimestamp
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     public LikePostModel() {
     }

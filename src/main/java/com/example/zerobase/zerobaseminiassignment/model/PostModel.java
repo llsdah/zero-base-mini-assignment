@@ -1,10 +1,13 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.Setter;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @DynamicUpdate
@@ -28,6 +31,15 @@ public class PostModel extends ModificationDateModel{
     private String contents;
     @Setter
     private String status; // 0:임시, 1:확설화, 2:비활설화, 3:차단
+
+
+    @CreationTimestamp
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     public PostModel(){}
 

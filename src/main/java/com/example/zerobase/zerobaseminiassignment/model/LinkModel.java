@@ -1,9 +1,10 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
 
 /**
  * 링크 모델
@@ -26,6 +27,14 @@ public class LinkModel extends ModificationDateModel {
 
     @Version
     private Long version; // 다중 서버에서의 동시성문제를 위한 버전 필드 추가
+
+    @CreationTimestamp
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     public LinkModel(String url, String title, String contents, boolean useFlag, Long memberId) {
         this.url = url;

@@ -1,9 +1,12 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -22,10 +25,17 @@ public class FollowModel extends RegistrationDateModel{
     @JoinColumn(name = "follower_memberId")
     private MemberModel followerMemberId;
 
-
     @ManyToOne
     @JoinColumn(name = "following_memberId")
     private MemberModel followingMemberId;
+
+    @CreationTimestamp
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     public FollowModel() {
     }

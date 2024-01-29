@@ -1,9 +1,12 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
 
 /**
  * 차단
@@ -29,6 +32,14 @@ public class BlockModel extends RegistrationDateModel{
     @ManyToOne
     @JoinColumn(name = "block_postId")
     private PostModel blockPost;
+
+    @CreationTimestamp
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     public BlockModel() {}
     public BlockModel(MemberModel blockerMemberId, MemberModel blockMemberId) {

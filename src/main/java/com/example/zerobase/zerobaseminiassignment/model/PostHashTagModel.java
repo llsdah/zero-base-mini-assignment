@@ -1,9 +1,12 @@
 package com.example.zerobase.zerobaseminiassignment.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @DynamicUpdate
@@ -26,6 +29,14 @@ public class PostHashTagModel {
     @JoinColumn(name = "hashTagId", referencedColumnName = "hashTagId")
     private HashTagModel hashTagId;
     private String visibleTagName; //대소문자 무구별
+
+    @CreationTimestamp
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     public PostHashTagModel() {}
 
