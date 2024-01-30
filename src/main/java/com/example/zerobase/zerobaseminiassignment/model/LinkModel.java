@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE) // 링크에 대한 설정이 동시에 바뀔 가능성은 크다
-public class LinkModel extends ModificationDateModel {
+public class LinkModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

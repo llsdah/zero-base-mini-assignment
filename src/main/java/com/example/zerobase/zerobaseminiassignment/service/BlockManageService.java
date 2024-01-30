@@ -91,6 +91,7 @@ public class BlockManageService {
 
         return true;
     }
+
     public boolean deleteByBlockerMember(MemberModel blockerMember) {
         try{
             blockRepository.deleteByBlockerMember(blockerMember);

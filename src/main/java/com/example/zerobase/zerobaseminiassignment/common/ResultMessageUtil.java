@@ -70,4 +70,14 @@ public class ResultMessageUtil {
                 data
         );
     }
+
+    public static ResultMessageModel resultMessage(String meaageCode,String message,Object object){
+
+        if(object == null){
+            return new ResultMessageModel("E0001","retrun data is null",object);
+        }
+
+        return new ResultMessageModel(meaageCode,message,object);
+    }
+
 }

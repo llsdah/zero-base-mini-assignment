@@ -1,7 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyAuthorityUtil;
-import com.example.zerobase.zerobaseminiassignment.model.ModificationDateModel;
 import com.example.zerobase.zerobaseminiassignment.model.LinkModel;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.repository.LinkRepository;
@@ -54,16 +53,10 @@ public class GroupManageService {
             throw new RuntimeException("member model data is null");
         }
 
-        ModificationDateModel modificationDateModel = getData();
-        memberModel.setRegistrationDate(modificationDateModel.getRegistrationDate());
-        memberModel.updateModificationDate(modificationDateModel.getModificationDate());
         memberModel.updateAuthority(MyAuthorityUtil.TEMPORARY_USER);
 
         MemberModel savedMemberModel = memberRepository.save(memberModel);
         LinkModel createdLink = linkRepository.save(new LinkModel(url, title, contents, false , savedMemberModel.getMemberId()));
-
-        createdLink.setRegistrationDate(modificationDateModel.getRegistrationDate());
-        createdLink.updateModificationDate(modificationDateModel.getModificationDate());
 
         return createdLink;
     }
@@ -93,19 +86,4 @@ public class GroupManageService {
         return memberModel;
     }
 
-    /**
-     * 시간 등록을 위한 메소드
-     * @return DateModel
-     */
-    public ModificationDateModel getData(){
-        // 한국 시간대로 설정
-        ZoneId koreaZone = ZoneId.of("Asia/Seoul");
-        ZonedDateTime koreaTime = ZonedDateTime.now(koreaZone);
-        LocalDateTime currentTime = koreaTime.toLocalDateTime();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        String formattedTime = currentTime.format(formatter);
-
-        return new ModificationDateModel();
-    }
 }

@@ -1,7 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.config;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtProvider;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -46,9 +45,7 @@ public class MySecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityF
         http
                 .authorizeHttpRequests(
                         authorize -> authorize
-                                .requestMatchers("/members/**").permitAll()
-                                .requestMatchers("/hashTags/**").permitAll()
-                                .requestMatchers("/posts/**").permitAll()
+                                .requestMatchers("/members").permitAll()
                                 .requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated()
                 );

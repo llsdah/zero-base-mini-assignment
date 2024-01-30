@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) // 맴버 변수에 대한 설정이 동시에 바뀔 가능성은 적다
 @Table(indexes = @Index(name = "like_id", columnList = "likeId"))
-public class LikePostModel extends RegistrationDateModel{
+public class LikePostModel{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

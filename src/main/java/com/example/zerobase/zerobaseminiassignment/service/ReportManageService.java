@@ -1,7 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyAuthorityUtil;
-import com.example.zerobase.zerobaseminiassignment.common.MyDateUtil;
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtUtil;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.ReportModel;
@@ -52,8 +51,6 @@ public class ReportManageService {
             if(!StringUtils.hasText(existingData.getAnswer())){
                 existingData.setAnswer(reportModel.getAnswer());
             }
-
-            existingData.updateModificationDate(MyDateUtil.getData().getModificationDate());
 
             entityManager.merge(existingData);
         } catch (Exception e) {

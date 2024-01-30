@@ -15,8 +15,8 @@ public class MySessionUtil {
         HttpSession session = request.getSession();
 
         session.setMaxInactiveInterval(10);
-        session.setAttribute(MyAuthUtil.MANAGER, true);
-        log.info("session create [{}]", session.getAttribute(MyAuthUtil.MANAGER));
+        session.setAttribute(MyAuthorityUtil.MANAGER, true);
+        log.info("session create [{}]", session.getAttribute(MyAuthorityUtil.MANAGER));
 
         return (Long) session.getAttribute("memberID");
 

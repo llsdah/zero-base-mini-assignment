@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(indexes = @Index(name = "block_id", columnList = "blockId"))
-public class BlockModel extends RegistrationDateModel{
+public class BlockModel{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,13 +25,13 @@ public class BlockModel extends RegistrationDateModel{
 
     @ManyToOne
     @JoinColumn(name = "blocker_memberId")
-    private MemberModel blockerMember;
+    private MemberModel blockerMember; // 차단을 수행한 사람
     @ManyToOne
     @JoinColumn(name = "block_memberId")
-    private MemberModel blockMember;
+    private MemberModel blockMember; // 차단된 사람
     @ManyToOne
     @JoinColumn(name = "block_postId")
-    private PostModel blockPost;
+    private PostModel blockPost; // 차단된 게시물
 
     @CreationTimestamp
     @Column(name = "create_date")

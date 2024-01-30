@@ -24,7 +24,7 @@ import java.util.Collections;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) // 맴버 변수에 대한 설정이 동시에 바뀔 가능성은 적다
 @Table(indexes = @Index(name = "member_id", columnList = "memberId"))
 @Getter
-public class MemberModel extends ModificationDateModel{
+public class MemberModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,6 +40,8 @@ public class MemberModel extends ModificationDateModel{
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Setter
     private String authority;
 
     @Column(columnDefinition = "int default 0")

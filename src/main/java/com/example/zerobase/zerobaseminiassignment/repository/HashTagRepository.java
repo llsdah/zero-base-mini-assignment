@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface HashTagRepository extends JpaRepository<HashTagModel,Long>{
 
-    HashTagModel findByTagNameEquals(String tagName);
+    HashTagModel findByTagName(String tagName);
 }
 

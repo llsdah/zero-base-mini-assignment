@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(indexes = @Index(name = "report_id", columnList = "reportId"))
-public class ReportModel extends ModificationDateModel{
+public class ReportModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

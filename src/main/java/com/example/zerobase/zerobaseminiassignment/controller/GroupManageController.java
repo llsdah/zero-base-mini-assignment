@@ -26,7 +26,6 @@ public class GroupManageController {
      * @param memberModel
      * @return ResultMessageModel
      */
-    // 로그인 정보
     @PostMapping("/invite")
     @ResponseBody
     public ResultMessageModel postInvite(@RequestBody MemberModel memberModel){
@@ -34,12 +33,7 @@ public class GroupManageController {
 
         LinkModel result = groupManageService.invite(memberModel);
         log.info("[END] GroupManageController postInvite");
-        if(result != null){
-            return ResultMessageUtil.success("postInvite", result);
-        }else {
-            return ResultMessageUtil.fail();
-        }
-
+        return ResultMessageUtil.resultMessage("S0001","사용자를 초대 했습니다.", result);
     }
 
     /**
@@ -58,11 +52,7 @@ public class GroupManageController {
         MemberModel result = groupManageService.accept(link);
 
         log.info("[END] GroupManageController postAccept");
-        if(result != null){
-            return ResultMessageUtil.success("postAccept", result);
-        }else {
-            return ResultMessageUtil.fail();
-        }
+        return ResultMessageUtil.resultMessage("S0001","사용자가 초대에 수락하였습니다.",result);
     }
 
 }

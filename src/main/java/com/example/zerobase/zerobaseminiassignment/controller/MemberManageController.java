@@ -42,12 +42,7 @@ public class MemberManageController {
         MemberModel result = memberManageService.save(memberModel);
 
         log.info("[END] MemberManageController postCreate");
-
-        if(result != null){
-            return ResultMessageUtil.success("postCreate", result);
-        }
-        return ResultMessageUtil.fail();
-
+        return ResultMessageUtil.resultMessage("S0001","회원을 추가했습니다.",result);
     }
 
     /**
@@ -62,13 +57,7 @@ public class MemberManageController {
         MemberModel result = memberManageService.find(memberId);
 
         log.info("[END] MemberManageController getFind : "+memberId);
-
-        if(result != null){
-            return ResultMessageUtil.success("getFind", result);
-        }
-
-        return ResultMessageUtil.fail();
-
+        return ResultMessageUtil.resultMessage("S0001","회원을 조회했습니다.",result);
     }
 
 
@@ -84,11 +73,7 @@ public class MemberManageController {
         List<MemberModel> result = memberManageService.findAll();
 
         log.info("[END] MemberManageController getFindAll");
-
-        if(result != null){
-            return ResultMessageUtil.success("getFindAll", result);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","회원을 전체 조회했습니다.",result);
     }
 
     /**
@@ -104,11 +89,7 @@ public class MemberManageController {
         MemberModel result = memberManageService.update(memberId, memberModel);
 
         log.info("[END] MemberManageController updateMember");
-        if(result != null){
-            return ResultMessageUtil.success("updateMember", result);
-        }
-
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","회원정보를 수정했습니다.",result);
     }
     /**
      * 회원 데이터 삭제.
@@ -122,10 +103,7 @@ public class MemberManageController {
         boolean result = memberManageService.delete(memberId);
 
         log.info("[END] MemberManageController deleteMember");
-        if(result){
-            return ResultMessageUtil.success("postCreate", result);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","회원 데이터를 삭제하였습니다.",result);
     }
 
     /**
@@ -141,10 +119,7 @@ public class MemberManageController {
         boolean result = followManageService.save(memberId);
 
         log.info("[END] MemberManageController postFollow");
-        if(result){
-            return ResultMessageUtil.success("postFollow", result);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","팔로워를 추가했습니다.",result);
     }
 
     /**
@@ -160,9 +135,6 @@ public class MemberManageController {
         boolean result = followManageService.delete(memberId);
 
         log.info("[END] MemberManageController deleteFollow");
-        if(result){
-            return ResultMessageUtil.success("deleteFollow", result);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","팔로워를 삭제했습니다.",result);
     }
 }

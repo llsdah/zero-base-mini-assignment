@@ -1,17 +1,23 @@
 package com.example.zerobase.zerobaseminiassignment.common;
 
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
+import com.example.zerobase.zerobaseminiassignment.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
 @Slf4j
+@Component
 public class MyJwtUtil {
+
+    @Autowired
+    private RedisService redisService;
+
 
     private static MemberModel checkLogin(){
 

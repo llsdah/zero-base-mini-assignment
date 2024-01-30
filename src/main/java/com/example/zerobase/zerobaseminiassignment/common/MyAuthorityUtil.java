@@ -3,7 +3,7 @@ package com.example.zerobase.zerobaseminiassignment.common;
 /**
  * 맴버 변수 관련 모델
  */
-public class MyAuthUtil {
+public class MyAuthorityUtil {
 
     public static final String MANAGER = "Manager";
     public static final String USER = "User";

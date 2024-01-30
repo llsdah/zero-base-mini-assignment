@@ -28,7 +28,6 @@ public class MyJwtProvider {
     private String expiration;
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-
     public MyJwtProvider(@Value("${jwt.secret}")String secret,@Value("${jwt.expiration}") String expiration) {
         this.secret = secret;
         this.expiration = expiration;
@@ -66,7 +65,7 @@ public class MyJwtProvider {
         return claimsResolver.apply(claims);
     }
 
-    // 토큰에서 모든 클레임 추출
+    // 토큰에서 모든 클레임 추출, validation 포함
     private Claims extractAllClaims(String token) {
 
         return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();

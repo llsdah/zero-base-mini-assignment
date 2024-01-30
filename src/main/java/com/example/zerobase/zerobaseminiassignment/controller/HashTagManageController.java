@@ -32,12 +32,7 @@ public class HashTagManageController {
         HashTagModel result = hashTagManageService.find(hashTagName);
 
         log.info("[END] HashTagManageController getHashTag");
-
-        if(result != null){
-            return ResultMessageUtil.success("getHashTag", result);
-        }
-        return ResultMessageUtil.fail();
-
+        return ResultMessageUtil.resultMessage("S0001",hashTagName+" 해당 태그에 대해 조회 했습니다.",result);
     }
 
     /**
@@ -52,10 +47,7 @@ public class HashTagManageController {
         List<HashTagModel> result = hashTagManageService.findAll();
 
         log.info("[END] HashTagManageController getHashTags");
-        if(result != null){
-            return ResultMessageUtil.success("getHashTags", result);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","전체 태그된 내역을 조회했습니다.",result);
     }
 
     @DeleteMapping("{hashTagId}")
@@ -64,11 +56,7 @@ public class HashTagManageController {
 
         boolean flag = hashTagManageService.delete(hashTagId);
 
-        if(flag){
-            return ResultMessageUtil.success("deleteHashTags");
-        }
-
-        return ResultMessageUtil.fail("deleteHashTags");
+        return ResultMessageUtil.resultMessage("S0001","해당 태그를 삭제하였습니다.",flag);
     }
 
 }

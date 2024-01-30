@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,13 @@ public class MemberManageService {
         log.info("MemberManageService save");
         MemberModel model = null;
         try {
+            String authority = memberModel.getAuthority();
+            if(!StringUtils.hasText(authority) || // 빈값은 임시 유저
+                    (!authority.equals(MyAuthorityUtil.MANAGER) && // 매니저나 user가 아니여도 임시 유저 
+                            !authority.equals(MyAuthorityUtil.USER)) ){ 
+                memberModel.setAuthority(MyAuthorityUtil.TEMPORARY_USER);
+            }
+
             model = memberRepository.save(memberModel);
 
         } catch (DataIntegrityViolationException e) {
@@ -61,7 +69,7 @@ public class MemberManageService {
     }
 
     public MemberModel find(Long id){
-        log.info("MemberManageService find if"+ id);
+        log.info("MemberManageService find : "+ id);
         MemberModel result = null;
         Optional<MemberModel> output = memberRepository.findById(id);
         if(output.isPresent()) {
@@ -129,8 +137,6 @@ public class MemberManageService {
             if(memberModel.getPassword() != null){
                 existingData.setPassword(memberModel.getPassword());
             }
-
-            existingData.updateModificationDate(MyDateUtil.getData().getModificationDate());
 
             entityManager.merge(existingData);
         } catch (DataIntegrityViolationException e) {

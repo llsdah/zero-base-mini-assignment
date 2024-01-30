@@ -3,8 +3,8 @@ package com.example.zerobase.zerobaseminiassignment.config;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtProvider;
 import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
-import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.service.MemberManageService;
+import com.example.zerobase.zerobaseminiassignment.service.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,9 +25,10 @@ public class MyJwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private final MyJwtProvider jwtProvider;
-
     @Autowired
     private MemberManageService memberManageService;
+    @Autowired
+    private RedisService redisService;
 
     public MyJwtFilter(MyJwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
@@ -42,9 +43,21 @@ public class MyJwtFilter extends OncePerRequestFilter {
         final String authorizationHeader = request.getHeader("Authorization");
         String memberID = null;
         String jwt = null;
-
+        
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
+
+            log.info("tokenBlacklistService "+ redisService.isBlackList(jwt));
+            /**
+             * 블랙리스트 토큰인지 체크 추가 즉, 10초 이내 재 로그인 방지.. 뭐 그냥,!
+             */
+            if(redisService.isBlackList(jwt)){
+                log.info("It is tokenBlacklistService");
+                SecurityContextHolder.clearContext();
+                jwt="";// 초기화
+                throw new RuntimeException("wait maybe ten seconds");
+            };
+
             memberID = jwtProvider.extractMemberId(jwt);
         }
 

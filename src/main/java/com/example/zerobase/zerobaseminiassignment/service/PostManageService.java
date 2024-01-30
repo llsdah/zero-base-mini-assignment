@@ -1,7 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
 import com.example.zerobase.zerobaseminiassignment.common.MyAuthorityUtil;
-import com.example.zerobase.zerobaseminiassignment.common.MyDateUtil;
 import com.example.zerobase.zerobaseminiassignment.common.MyJwtUtil;
 import com.example.zerobase.zerobaseminiassignment.model.*;
 import com.example.zerobase.zerobaseminiassignment.repository.*;
@@ -30,7 +29,10 @@ public class PostManageService {
     @Autowired
     private BlockRepository blockRepository;
     @Autowired
+    private HashTagManageService hashTagManageService;
+    @Autowired
     private HashTagRepository hashTagRepository;
+
     @Autowired
     private PostHashTagRepository postHashTagRepository;
 
@@ -46,7 +48,6 @@ public class PostManageService {
     public PostModel save(PostModel postModel) {
         log.info("PostManageService save");
         postModel.setMemberId(MyJwtUtil.getMember());
-        postModel.setRegistrationDate(MyDateUtil.getData().getRegistrationDate());
         PostModel outputPost = null;
         try {
 
@@ -57,7 +58,7 @@ public class PostManageService {
 
             for(String hashTag : hashTags){
                 log.info("hashTag [{}]",hashTag);
-                HashTagModel hashTagModel = hashTagRepository.save(new HashTagModel(hashTag.toLowerCase()));
+                HashTagModel hashTagModel = hashTagManageService.saveHashTagValidation(hashTag.toLowerCase());
 
                 // [save] post_hashTag
                 postHashTagRepository.save(new PostHashTagModel(outputPost,hashTagModel,hashTag));
@@ -86,27 +87,15 @@ public class PostManageService {
     public List<PostModel> findAll(){
         List<PostModel> allPost = postRepository.findAll();
 
-        // 순환참조 해제를 위한 개별 생성. 확인이 필요하다.
-        List<BlockModel> allBlock = blockRepository.findAll();
-
-        if(allBlock.isEmpty()){
-            throw new RuntimeException("block is null");
+        if(MyJwtUtil.checkAuth("Manager")){
+            return allPost;
         }
 
-        //userList.removeIf(user -> "A".equals(user.getName()));
-        // 해당 부분 중 특정 값만 삭제 후 반환
-        for(BlockModel block : allBlock){
-            if(block.getBlockMember() != null){
-                allPost.removeIf(post -> block.getBlockMember().getMemberId().equals(post.getMemberId().getMemberId()));
-            }else if (block.getBlockPost() != null){
-                allPost.removeIf(post -> block.getBlockPost().getPostId().equals(post.getPostId()));
-            }
-        }
-
+        allPost = deleteBlockPost(allPost);
         return allPost;
     }
 
-    public List<PostModel> findByTitle(String title){
+    public List<PostModel> getPostFilterByTitle(String title){
 
         List<PostModel> postModelList = postRepository.findByTitle(title);
 
@@ -120,6 +109,7 @@ public class PostManageService {
         Matcher matcher = pattern.matcher(text);
 
         while (matcher.find()) {
+            log.info("matcher.find() : "+matcher.group());
             hashtags.add(matcher.group());
         }
 
@@ -197,5 +187,45 @@ public class PostManageService {
             return false;
         }
         return true;
+    }
+
+    public List<PostModel> getPostFilterByHashTag(String hashTags) {
+        // 해시 태그라고 저장된 값에는 # 이 붙어 있다. 다만 조회 할떄는 같이 넘겨 준다고 예상이 된다. 그렇기에 굳이 필터 하기 않겠다.
+        // 태크와 매칭된 태그 번호를 가져온 후 PostHashTag를 조회해 반환해 준다.
+        HashTagModel hashTagModel = hashTagRepository.findByTagName(hashTags.toLowerCase());
+
+        List<PostHashTagModel> filterByPostHashTagModelList = postHashTagRepository.findByHashTagId(hashTagModel);
+        List<PostModel> postModelList = new ArrayList<>();
+
+        for(PostHashTagModel item : filterByPostHashTagModelList){
+            postModelList.add(item.getPostId());
+        }
+
+        postModelList = deleteBlockPost(postModelList);
+
+        return postModelList;
+    }
+
+    /**
+     * 차단 게시글 조회 제외 로직
+     */
+    private List<PostModel> deleteBlockPost(List<PostModel> postModelList){
+
+        // 차단된 회원이 있는 경우 없에겠습니다
+        List<BlockModel> blockModelList = blockRepository.findBlockModelByBlockerMember(MyJwtUtil.getMember());
+
+        for(BlockModel blockModel : blockModelList ){
+            // 차단 게시글 삭제
+            if(blockModel.getBlockPost()!=null){
+                postModelList.remove(blockModel.getBlockPost());
+                continue;
+            }
+            // 차단 맴버의 게시글 삭제
+            MemberModel block = blockModel.getBlockMember();
+
+            postModelList.removeIf(postModel -> postModel.getMemberId().equals(block));
+        }
+
+        return postModelList;
     }
 }

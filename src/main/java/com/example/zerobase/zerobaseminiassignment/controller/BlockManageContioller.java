@@ -31,12 +31,7 @@ public class BlockManageContioller {
 
         BlockModel result = blockManageService.saveBlockPost(postId);
         log.info("[END] BlockManageContioller postBlockPost");
-        if(result != null){
-            return ResultMessageUtil.success("postBlockPost",result);
-        }else {
-            return ResultMessageUtil.fail();
-        }
-
+        return ResultMessageUtil.resultMessage("S0001","해당 게시글을 차단했습니다.",result);
     }
 
     /**
@@ -52,12 +47,7 @@ public class BlockManageContioller {
         BlockModel result = blockManageService.saveBlockMember(memberId);
 
         log.info("[END] BlockManageContioller postBlockUser");
-        if(result != null){
-            return ResultMessageUtil.success("postBlockUser", result);
-        }else {
-            return ResultMessageUtil.fail();
-        }
-
+        return ResultMessageUtil.resultMessage("S0001","g해당 유저를 차단했습니다.",result);
     }
 
     /**
@@ -71,24 +61,16 @@ public class BlockManageContioller {
         List<BlockModel> results = blockManageService.findAll();
 
         log.info("[END] BlockManageContioller getBlocks");
-        if(results != null){
-            return ResultMessageUtil.success("getBlocks", results);
-        }else {
-            return ResultMessageUtil.fail();
-        }
-
+        return ResultMessageUtil.resultMessage("S0001","차단된 내역을 전체 조회했습니다.",results);
     }
 
     @DeleteMapping("/{blockId}")
     @ResponseBody
     public ResultMessageModel deleteBlock(@PathVariable("blockId") Long blockId) {
         log.info("[START] BlockManageContioller deleteBlock");
-        boolean results = blockManageService.delete(blockId);
+        boolean result = blockManageService.delete(blockId);
 
         log.info("[END] BlockManageContioller deleteBlock");
-        if(results){
-            return ResultMessageUtil.success("deleteBlock", results);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","해당 차단내역을 해제했습니다.",result);
     }
 }

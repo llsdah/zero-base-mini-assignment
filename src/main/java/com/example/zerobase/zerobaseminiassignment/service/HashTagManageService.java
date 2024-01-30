@@ -1,8 +1,6 @@
 package com.example.zerobase.zerobaseminiassignment.service;
 
-import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
 import com.example.zerobase.zerobaseminiassignment.model.HashTagModel;
-import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.repository.HashTagRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,8 +24,8 @@ public class HashTagManageService {
     private EntityManager entityManager;
 
     @Transactional
-    public HashTagModel save(String hashTag) {
-        log.info("HashTagManageService save");
+    public HashTagModel saveHashTagValidation(String hashTag) {
+        log.info("HashTagManageService saveHashTagValidation");
         HashTagModel hashTagModel = this.find(hashTag);
 
 
@@ -48,7 +46,7 @@ public class HashTagManageService {
 
         HashTagModel hashTagModel = null;
         try {
-            hashTagModel =  hashTagRepository.findByTagNameEquals(hashTag.toLowerCase());
+            hashTagModel =  hashTagRepository.findByTagName(hashTag.toLowerCase());
         } catch (DataIntegrityViolationException e) {
             // 데이터베이스 제약 조건 등에 위배되어 저장 실패
             // 적절한 예외 처리를 수행

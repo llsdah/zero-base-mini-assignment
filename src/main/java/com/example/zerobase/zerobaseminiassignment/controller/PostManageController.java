@@ -1,12 +1,10 @@
 package com.example.zerobase.zerobaseminiassignment.controller;
 
 import com.example.zerobase.zerobaseminiassignment.common.ResultMessageUtil;
-import com.example.zerobase.zerobaseminiassignment.model.MemberModel;
 import com.example.zerobase.zerobaseminiassignment.model.PostModel;
 import com.example.zerobase.zerobaseminiassignment.model.ResultMessageModel;
 import com.example.zerobase.zerobaseminiassignment.service.LikePostMenageService;
 import com.example.zerobase.zerobaseminiassignment.service.PostManageService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,10 +31,7 @@ public class PostManageController {
         PostModel result = postManageService.save(postModel);
 
         log.info("[END] PostManageController postCreate");
-        if(result != null){
-            return ResultMessageUtil.success("postCreate", result);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","게시글을 생성했습니다.",result);
     }
 
     /**
@@ -47,17 +42,12 @@ public class PostManageController {
     @GetMapping("/{postId}")
     @ResponseBody
     public ResultMessageModel getPost(@PathVariable("postId") Long postId){
-        log.info("[START] PostManageController postFind");
+        log.info("[START] PostManageController getPost");
 
         PostModel result = postManageService.find(postId);
 
-        log.info("[END] PostManageController postCreate");
-        if(result != null){
-            return ResultMessageUtil.success("getFind", result);
-        }
-
-        return ResultMessageUtil.fail();
-
+        log.info("[END] PostManageController getPost");
+        return ResultMessageUtil.resultMessage("S0001","게시글을 조회했습니다.",result);
     }
 
     /**
@@ -72,12 +62,7 @@ public class PostManageController {
         List<PostModel> result = postManageService.findAll();
 
         log.info("[END] PostManageController getPosts");
-
-        if(result != null){
-            return ResultMessageUtil.success("getPosts", result);
-        }
-
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","게시글을 전체 조회 했습니다.",result);
     }
 
     @PutMapping("/{postId}")
@@ -88,10 +73,7 @@ public class PostManageController {
         PostModel result = postManageService.update(postId, postModel);
 
         log.info("[END] PostManageController updatePost");
-        if(result != null){
-            return ResultMessageUtil.success("updatePost", result);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","게시글을 수정했습니다.",result);
     }
 
     /**
@@ -106,12 +88,14 @@ public class PostManageController {
         boolean result = postManageService.delete(postId);
 
         log.info("[END] PostManageController deletePost");
-        if(result){
-            return ResultMessageUtil.success("deletePost", result);
-        }
-        return ResultMessageUtil.fail();
+        return ResultMessageUtil.resultMessage("S0001","게시글을 삭제했습니다.",result);
     }
 
+    /**
+     * 게시글 좋아요
+     * @param postId
+     * @return
+     */
     @PostMapping("/like/{postId}")
     @ResponseBody
     public ResultMessageModel postLikePosts(@PathVariable("postId")Long postId){
@@ -120,49 +104,55 @@ public class PostManageController {
         boolean result = likePostMenageService.save(postId);
 
         log.info("[END] PostManageController postLikePosts");
-        if(result){
-            return ResultMessageUtil.success("postLikePosts", result);
-        }
-
-        return ResultMessageUtil.fail();
-
+        return ResultMessageUtil.resultMessage("S0001","게시글을 '좋아요'했습니다.",result);
     }
 
+    /**
+     * 게시글 좋아요 취소
+     * @param postId
+     * @return
+     */
     @DeleteMapping("/like/{postId}")
     @ResponseBody
-    public ResultMessageModel deleteLikePosts(@PathVariable("postId")Long postId){
-        log.info("[START] PostManageController postLikePosts");
+    public ResultMessageModel deleteLikePosts(@PathVariable("postId") Long postId){
+        log.info("[START] PostManageController deleteLikePosts");
 
         boolean result = likePostMenageService.delete(postId);
 
         log.info("[END] PostManageController deleteLikePosts");
-        if(result){
-            return ResultMessageUtil.success("deleteLikePosts", result);
-        }
-
-        return ResultMessageUtil.fail();
-
+        return ResultMessageUtil.resultMessage("S0001","게시글의 '좋아요'를 취소했습니다.",result);
     }
 
     /**
-     * 향후 검색 기능을 위한 메소드
+     * 게시글을 제목으로 검색
      * @param title
      * @return
      */
-    @PostMapping("/find/title")
+    @GetMapping("/title")
     @ResponseBody
-    public ResultMessageModel postFindTitle(@RequestBody String title){
+    public ResultMessageModel getPostFilterByTitle(String title){
         log.info("[START] PostManageController postFindTitle");
 
-        List<PostModel> result = postManageService.findByTitle(title);
+        List<PostModel> result = postManageService.getPostFilterByTitle(title);
 
-        log.info("[END] PostManageController postCreate");
-        if(result != null){
-            return ResultMessageUtil.success("postFindTitle", result);
-        }
+        log.info("[END] PostManageController postFindTitle");
+        return ResultMessageUtil.resultMessage("S0001",title+" 조건의 검색 결과입니다.",result);
+    }
 
-        return ResultMessageUtil.fail();
+    /**
+     * 게시글을 해시 태그 검색
+     * @param hashTag
+     * @return
+     */
+    @GetMapping("/hashtag")
+    @ResponseBody
+    public ResultMessageModel getPostFilterByHashTag(String hashTag){
+        log.info("[START] PostManageController getPostFilterByHashTag " + hashTag);
 
+        List<PostModel> result = postManageService.getPostFilterByHashTag(hashTag);
+
+        log.info("[END] PostManageController getPostFilterByHashTag");
+        return ResultMessageUtil.resultMessage("S0001",hashTag+" 조건의 검색 결과입니다.",result);
     }
 
 }
