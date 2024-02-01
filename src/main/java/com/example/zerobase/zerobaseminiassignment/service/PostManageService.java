@@ -32,9 +32,12 @@ public class PostManageService {
     private HashTagManageService hashTagManageService;
     @Autowired
     private HashTagRepository hashTagRepository;
-
     @Autowired
     private PostHashTagRepository postHashTagRepository;
+
+    @Autowired
+    private RedisService redisService;
+
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -84,15 +87,49 @@ public class PostManageService {
         return result;
     }
 
-    public List<PostModel> findAll(){
-        List<PostModel> allPost = postRepository.findAll();
+    /**
+     * 레디스,
+     * 레디스에 key 값이 존재 하는 경우 data 출력
+     * 없다면 db에서 재조회 후 redis add -> 결과는 db값 반환
+     * @return
+     */
+    public List<PostModel> findPostByPageIndex(int visible, int pageIndex){
+        // 레디스 게시글 갯수 조회
+        int postCount = redisService.getValueForPostCount();
 
-        if(MyJwtUtil.checkAuth("Manager")){
-            return allPost;
+        List<PostModel> postList = new ArrayList<>();
+
+        // 갯수가 충분하면 레디스에서 출력
+        if(postCount != 0 && postCount >= (visible*pageIndex)){
+            postList = redisService.getPostList(visible, pageIndex);
+            return postList;
+        }else{
+            // 글이 부족해서 우선 db에서 다시 조회해 옵니다.
+            postList = postRepository.findAll();
+
+            // 제외 로직
+            if(!MyJwtUtil.checkAuth("Manager")){
+                postList = deleteBlockPost(postList);
+            }
+
+            // 레디스의 게시글 갯수 담기
+            redisService.addPostListCount(postList.size());
+
+            // 레디스에 담기
+            for(PostModel postModel : postList){
+                redisService.addPostList(postModel);
+            }
+
+            int minCount = visible*pageIndex;
+            // 갯수 만큼만 리턴
+            if ( !postList.isEmpty() && minCount <= postList.size()) {
+                // 시작 인덱스가 유효 범위를 벗어난 경우 예외 처리 또는 다른 로직 수행
+                return new ArrayList<>(postList.subList(minCount-1, minCount+visible-1));
+            }
+
         }
 
-        allPost = deleteBlockPost(allPost);
-        return allPost;
+        return postList;
     }
 
     public List<PostModel> getPostFilterByTitle(String title){

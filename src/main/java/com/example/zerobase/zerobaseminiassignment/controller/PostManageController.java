@@ -58,8 +58,8 @@ public class PostManageController {
     @ResponseBody
     public ResultMessageModel getPosts(){
         log.info("[START] PostManageController getPosts");
-
-        List<PostModel> result = postManageService.findAll();
+        // 몇개씩 볼지 그리고 페이지 번호
+        List<PostModel> result = postManageService.findPostByPageIndex(10,1);
 
         log.info("[END] PostManageController getPosts");
         return ResultMessageUtil.resultMessage("S0001","게시글을 전체 조회 했습니다.",result);

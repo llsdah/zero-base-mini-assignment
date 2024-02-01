@@ -32,7 +32,6 @@ public class PostModel{
     @Setter
     private String status; // 0:임시, 1:확설화, 2:비활설화, 3:차단
 
-
     @CreationTimestamp
     @Column(name = "create_date")
     private LocalDateTime createDate;
